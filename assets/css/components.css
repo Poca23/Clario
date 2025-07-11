@@ -163,18 +163,45 @@
 
 /* PROGRESS BAR */
 .progress-bar {
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
+  width: 100%;
   height: 8px;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
   overflow: hidden;
-  margin-bottom: var(--space-md);
-}
+  margin-bottom: var(--space-sm);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);}
 
 .progress-bar__fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
   transition: width 0.3s ease;
-  border-radius: var(--radius);
+  border-radius: 4px;
+
+}
+
+/* Animation pulse quand 100% */
+.progress-bar__fill--complete {
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Stats text */
+.progress-stats {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: var(--primary);
 }
 
 /* MODAL */
@@ -238,4 +265,29 @@
   .task-card__actions {
     align-self: flex-end;
   }
+}
+
+.keyboard-hint {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  z-index: 1000;
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.keyboard-hint:hover {
+  opacity: 1;
+}
+
+/* Dark mode */
+[data-theme="dark"] .keyboard-hint {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }

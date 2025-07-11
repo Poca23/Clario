@@ -1,6 +1,7 @@
 import TaskManager from './modules/TaskManager.js';
 import UIManager from './modules/UIManager.js';
 import ThemeManager from './modules/theme.js';
+import KeyboardManager from './keyboard.js';
 
 class ClarioApp {
   constructor() {
@@ -18,7 +19,8 @@ const themeManager = new ThemeManager();
       
       // Initialiser l'interface utilisateur
       this.uiManager = new UIManager(this.taskManager);
-      
+      const keyboardManager = new KeyboardManager(this.uiManager);
+
       // Rendre disponible globalement pour les événements inline
       window.uiManager = this.uiManager;
       
