@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clario - Gestionnaire de Tâches</title>
-    <link rel="stylesheet" href="/clario/assets/css/styles.css">
-    <link rel="stylesheet" href="/clario/assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 </head>
 <body>
     <div class="container">
@@ -16,17 +16,17 @@
 
         <!-- Progress Bar -->
         <div class="progress-bar">
-            <div class="progress-bar__fill"></div>
+            <div class="progress-bar__fill" style="width: 0%"></div>
         </div>
         <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--space-lg);">
-            3 sur 5 tâches terminées (60%)
+            0 sur 0 tâches terminées (0%)
         </p>
 
         <!-- Filter Bar -->
         <div class="filter-bar">
             <div class="filter-bar__row">
                 <div class="input-group filter-bar__search">
-                    <input type="text" placeholder="Rechercher une tâche...">
+                    <input type="text" placeholder="Rechercher une tâche... (Ctrl+F)">
                 </div>
                 <div class="input-group filter-bar__select">
                     <label for="task-filter" class="visually-hidden">Filtrer les tâches</label>
@@ -36,75 +36,32 @@
                         <option>Terminées</option>
                     </select>
                 </div>
-                <button class="btn btn-primary">+ Ajouter</button>
+                <button class="btn btn-primary" title="Ajouter une tâche (Ctrl+N)">+ Ajouter</button>
             </div>
         </div>
 
-        <!-- Task Cards Demo -->
+        <!-- Tasks Container -->
         <div class="tasks-container">
-            <div class="task-card">
-                <div class="task-card__header">
-                    <h3 class="task-card__title">Finaliser le design system</h3>
-                    <div class="task-card__actions">
-                        <button class="btn btn-success" style="padding: var(--space-xs) var(--space-sm);">✓</button>
-                        <button class="btn btn-secondary" style="padding: var(--space-xs) var(--space-sm);">✏️</button>
-                        <button class="btn btn-danger" style="padding: var(--space-xs) var(--space-sm);">🗑️</button>
-                    </div>
-                </div>
-                <div class="task-card__meta">
-                    <span class="task-card__priority task-card__priority--high">Haute</span>
-                    <span>Créée le 15 Jan 2024</span>
-                </div>
-            </div>
-
-            <div class="task-card">
-                <div class="task-card__header">
-                    <h3 class="task-card__title">Implémenter les composants UI</h3>
-                    <div class="task-card__actions">
-                        <button class="btn btn-success" style="padding: var(--space-xs) var(--space-sm);">✓</button>
-                        <button class="btn btn-secondary" style="padding: var(--space-xs) var(--space-sm);">✏️</button>
-                        <button class="btn btn-danger" style="padding: var(--space-xs) var(--space-sm);">🗑️</button>
-                    </div>
-                </div>
-                <div class="task-card__meta">
-                    <span class="task-card__priority task-card__priority--medium">Moyenne</span>
-                    <span>Créée le 15 Jan 2024</span>
-                </div>
-            </div>
-
-            <div class="task-card">
-                <div class="task-card__header">
-                    <h3 class="task-card__title">Tester la responsivité</h3>
-                    <div class="task-card__actions">
-                        <button class="btn btn-success" style="padding: var(--space-xs) var(--space-sm);">✓</button>
-                        <button class="btn btn-secondary" style="padding: var(--space-xs) var(--space-sm);">✏️</button>
-                        <button class="btn btn-danger" style="padding: var(--space-xs) var(--space-sm);">🗑️</button>
-                    </div>
-                </div>
-                <div class="task-card__meta">
-                    <span class="task-card__priority task-card__priority--low">Basse</span>
-                    <span>Créée le 15 Jan 2024</span>
-                </div>
-            </div>
+            <!-- Les tâches seront générées dynamiquement -->
         </div>
 
-        <!-- Demo Modal (hidden by default) -->
+        <!-- Modal -->
         <div class="modal" style="display: none;">
             <div class="modal__content">
                 <div class="modal__header">
                     <h2>Ajouter une tâche</h2>
-                    <button class="modal__close">×</button>
+                    <button class="modal__close" type="button">×</button>
                 </div>
                 <form>
                     <div class="input-group">
-                        <label for="task-title">Titre de la tâche</label>
-                        <input type="text" id="task-title" placeholder="Entrez le titre...">
+                        <label for="task-title">Titre de la tâche *</label>
+                        <input type="text" id="task-title" placeholder="Entrez le titre..." required>
                     </div>
                     <div class="input-group">
                         <label for="task-priority">Priorité</label>
                         <select id="task-priority">
                             <option value="low">Basse</option>
-                            <option value="medium">Moyenne</option>
+                            <option value="medium" selected>Moyenne</option>
                             <option value="high">Haute</option>
                         </select>
                     </div>
@@ -113,12 +70,65 @@
                         <textarea id="task-description" rows="3" placeholder="Description optionnelle..."></textarea>
                     </div>
                     <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
-                        <button type="button" class="btn btn-secondary">Annuler</button>
+                        <button type="button" class="btn btn-secondary" onclick="uiManager.hideModal()">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- CSS pour les notifications -->
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: var(--space-md);
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 500;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification--success { background: var(--success); }
+        .notification--error { background: var(--danger); }
+        .notification--info { background: var(--primary); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .task-card--completed {
+            opacity: 0.7;
+        }
+
+        .task-card__title--completed {
+            text-decoration: line-through;
+        }
+
+        .task-card__description {
+            margin-top: var(--space-sm);
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+
+    <!-- Load App -->
+    <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
