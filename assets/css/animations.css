@@ -1,0 +1,39 @@
+/* assets/css/animations.css */
+:root {
+  --animation-speed: 0.2s;
+  --animation-curve: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Micro-interactions */
+.task-item {
+  transition: all var(--animation-speed) var(--animation-curve);
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.task-completed {
+  animation: slideComplete 0.3s ease-out;
+}
+
+@keyframes slideComplete {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Boutons animés */
+.btn {
+  transition: all var(--animation-speed) var(--animation-curve);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
