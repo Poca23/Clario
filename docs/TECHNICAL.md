@@ -11,6 +11,11 @@ clario/
 │ ├── css/
 │ │ ├── style.css # Styles principaux
 │ │ └── components.css # Composants UI
+| ├── favicons/
+| │   ├── favicon-16x16.png
+| │   ├── favicon-32x32.png
+| │   ├── apple-touch-icon.png
+| │   └── site.webmanifest
 │ ├── js/
 │ │ ├── app.js # Point d'entrée JS
 │ │ └── modules/
