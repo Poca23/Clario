@@ -12,10 +12,34 @@
 <body>
     <div class="container">
         <header style="padding: var(--space-xl) 0;">
-            <div class="theme-toggle">
-                <button id="theme-toggle-btn" class="btn-theme">
-                <span class="theme-icon">🌙</span>
-                </button>
+            <div class="header-controls">
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn" class="btn-theme">
+                    <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+                <div class="keyboard-hints" id="keyboard-hints">
+                    <button class="keyboard-hints__toggle" onclick="this.parentElement.classList.toggle('keyboard-hints--expanded')" style="color: var(--text-secondary);">
+                        ⌨️ <span class="keyboard-text">Raccourcis</span>
+                    </button>
+                    <div class="keyboard-hints__content">
+                        <div class="keyboard-hint">
+                            <kbd>Alt + N</kbd> Nouvelle tâche
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Alt + F</kbd> Rechercher
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Esc</kbd> Fermer modal
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Space</kbd> Toggle tâche sélectionnée
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Delete</kbd> Supprimer tâche sélectionnée
+                        </div>
+                    </div>
+                </div>
             </div>
             <h1>🎯 Clario</h1>
             <p style="color: var(--text-secondary);">Votre Gestionnaire de tâches à la fois moderne et efficace !</p>

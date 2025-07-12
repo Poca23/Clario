@@ -64,7 +64,7 @@ h3 { font-size: var(--font-size-base); }
 /* LAYOUT */
 .container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 25px auto;
   padding: 0 var(--space-md);
 }
 
