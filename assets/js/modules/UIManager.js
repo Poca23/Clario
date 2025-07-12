@@ -84,8 +84,18 @@ class UIManager {
     this.elements.modal.style.display = 'none';
     document.body.style.overflow = '';
     this.resetForm();
+    
+    // Reset mode édition
+    delete this.elements.taskForm.dataset.editingId;
+    
+    // Reset textes modal
+    const modalTitle = this.elements.modal.querySelector('.modal__header h2');
+    modalTitle.textContent = 'Ajouter une tâche';
+    
+    const submitBtn = this.elements.modal.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Ajouter';
   }
-
+  
   resetForm() {
     this.elements.taskForm?.reset();
   }
@@ -103,14 +113,24 @@ class UIManager {
     }
 
     try {
-      this.taskManager.addTask(title, priority, description);
+      const editingId = this.elements.taskForm.dataset.editingId;
+      
+      if (editingId) {
+        // Mode édition
+        this.taskManager.editTask(editingId, title, priority, description);
+        this.showNotification('Tâche modifiée avec succès', 'success');
+      } else {
+        // Mode ajout
+        this.taskManager.addTask(title, priority, description);
+        this.showNotification('Tâche ajoutée avec succès', 'success');
+      }
+      
       this.hideModal();
-      this.showNotification('Tâche ajoutée avec succès', 'success');
     } catch (error) {
-      this.showNotification('Erreur lors de l\'ajout de la tâche', 'error');
+      this.showNotification('Erreur lors de l\'opération', 'error');
     }
   }
-
+  
   // Gestion des filtres
   handleSearch(e) {
     const search = e.target.value.trim();
@@ -195,10 +215,27 @@ class UIManager {
     }
   }
 
-  editTask(id) {
-    // Pour l'instant, on affiche juste une alerte
-    // Dans v0.4.0, on implémentera l'édition inline
-    alert('Fonctionnalité d\'édition disponible dans la prochaine version');
+editTask(id) {
+    const task = this.taskManager.getTask(id);
+    if (!task) return;
+
+    // Pré-remplir le formulaire modal
+    this.elements.taskTitle.value = task.title;
+    this.elements.taskPriority.value = task.priority;
+    this.elements.taskDescription.value = task.description || '';
+
+    // Marquer comme édition
+    this.elements.taskForm.dataset.editingId = id;
+    
+    // Changer le titre modal
+    const modalTitle = this.elements.modal.querySelector('.modal__header h2');
+    modalTitle.textContent = 'Modifier la tâche';
+    
+    // Changer le bouton submit
+    const submitBtn = this.elements.modal.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Modifier';
+
+    this.showModal();
   }
 
   // Utilitaires

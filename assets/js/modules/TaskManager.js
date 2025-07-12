@@ -74,6 +74,25 @@ class TaskManager {
     return task;
   }
 
+  // Méthode pour éditer une tâche (À AJOUTER)
+  editTask(id, title, priority, description) {
+    const task = this.tasks.find(task => task.id === id);
+    if (!task) return null;
+
+    // Validation
+    if (!title || title.trim() === '') return null;
+
+    // Mise à jour
+    task.title = title.trim();
+    task.priority = priority || task.priority;
+    task.description = description !== undefined ? description.trim() : task.description;
+    task.updatedAt = Date.now();
+
+    this.saveTasks();
+    this.notify('task-updated', task);
+    return task;
+  }
+
   // Méthode pour récupérer une tâche spécifique
   getTask(id) {
     return this.tasks.find(task => task.id === id);
