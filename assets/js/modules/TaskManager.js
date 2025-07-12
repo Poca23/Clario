@@ -74,6 +74,11 @@ class TaskManager {
     return task;
   }
 
+  // Méthode pour récupérer une tâche spécifique
+  getTask(id) {
+    return this.tasks.find(task => task.id === id);
+  }
+
   // Filtres et recherche
   getFilteredTasks() {
     let filteredTasks = [...this.tasks];
