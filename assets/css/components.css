@@ -256,6 +256,41 @@
   color: var(--text-secondary);
 }
 
+/* HEADER LOGO */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.header-logo__image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.header-logo__image:hover {
+  transform: scale(1.05);
+}
+
+.header-logo__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+
+/* Version mobile */
+@media (max-width: 767px) {
+  .header-logo__image {
+    width: 80px;
+    height: 80px;
+  }
+}
+
 /* Aide raccourcis */
 .keyboard-hints {
   position: fixed;
