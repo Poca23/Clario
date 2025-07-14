@@ -408,3 +408,130 @@ kbd {
     padding: var(--space-sm);
   }
 }
+
+/* INDICATEUR OFFLINE */
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--warning);
+  color: white;
+  padding: var(--space-sm);
+  text-align: center;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1001;
+  font-size: var(--font-size-sm);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.offline-indicator--visible {
+  transform: translateY(0);
+}
+
+/* Décaler le contenu quand offline */
+.app-offline .container {
+  margin-top: 50px;
+}
+
+/* BOUTON INSTALLATION PWA */
+.install-btn {
+  margin-left: var(--space-sm);
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* NOTIFICATIONS AMÉLIORÉES */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-md);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  border-left: 4px solid var(--primary);
+  max-width: 300px;
+}
+
+.notification--visible {
+  transform: translateX(0);
+}
+
+.notification--success {
+  border-left-color: var(--success);
+}
+
+.notification--error {
+  border-left-color: var(--danger);
+}
+
+.notification--info {
+  border-left-color: var(--primary);
+}
+
+.notification__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.notification__icon {
+  font-size: 1.2rem;
+}
+
+.notification__message {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+/* NOTIFICATION DE MISE À JOUR */
+.update-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-md);
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  border: 2px solid var(--primary);
+}
+
+.update-notification--visible {
+  transform: translateY(0);
+}
+
+.update-notification__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-sm);
+}
+
+/* RESPONSIVE */
+@media (max-width: 767px) {
+  .notification,
+  .update-notification {
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+  
+  .install-btn {
+    margin-left: 0;
+    margin-top: var(--space-sm);
+  }
+}

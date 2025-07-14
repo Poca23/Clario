@@ -1,0 +1,56 @@
+{
+  "name": "Clario - Gestionnaire de Tâches",
+  "short_name": "Clario",
+  "description": "Gestionnaire de tâches moderne et efficace, disponible hors ligne",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "assets/favicons/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "utility"],
+  "lang": "fr",
+  "shortcuts": [
+    {
+      "name": "Nouvelle tâche",
+      "short_name": "Nouveau",
+      "description": "Créer une nouvelle tâche rapidement",
+      "url": "/?action=new",
+      "icons": [
+        {
+          "src": "assets/favicons/favicon-32x32.png",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "Tâches terminées",
+      "short_name": "Terminées",
+      "description": "Voir les tâches terminées",
+      "url": "/?filter=completed",
+      "icons": [
+        {
+          "src": "assets/favicons/favicon-32x32.png",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
+}

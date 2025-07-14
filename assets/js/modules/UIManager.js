@@ -4,9 +4,11 @@ class UIManager {
   constructor(taskManager) {
     this.taskManager = taskManager;
     this.elements = {};
+    this.isOnline = navigator.onLine;
     this.initializeElements();
     this.bindEvents();
     this.taskManager.subscribe(this);
+    this.initOfflineIndicator();
   }
 
   initializeElements() {
@@ -52,6 +54,43 @@ class UIManager {
     
     // Raccourcis clavier
     document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+  }
+
+  // Gestion du mode offline
+  initOfflineIndicator() {
+    // Créer l'indicateur offline
+    this.offlineIndicator = document.createElement('div');
+    this.offlineIndicator.className = 'offline-indicator';
+    this.offlineIndicator.innerHTML = '🔌 Mode hors ligne - Vos données sont sauvegardées localement';
+    document.body.appendChild(this.offlineIndicator);
+    
+    // Écouter les changements de connexion
+    window.addEventListener('online', () => {
+      this.isOnline = true;
+      this.hideOfflineIndicator();
+      this.showNotification('🌐 Connexion rétablie !', 'success');
+    });
+    
+    window.addEventListener('offline', () => {
+      this.isOnline = false;
+      this.showOfflineIndicator();
+      this.showNotification('🔌 Mode hors ligne activé', 'info');
+    });
+    
+    // Initialiser l'état
+    if (!this.isOnline) {
+      this.showOfflineIndicator();
+    }
+  }
+
+  showOfflineIndicator() {
+    this.offlineIndicator.classList.add('offline-indicator--visible');
+    document.body.classList.add('app-offline');
+  }
+
+  hideOfflineIndicator() {
+    this.offlineIndicator.classList.remove('offline-indicator--visible');
+    document.body.classList.remove('app-offline');
   }
 
   // Observer Pattern - Réagit aux changements du TaskManager
@@ -195,11 +234,21 @@ class UIManager {
     
     if (this.elements.progressBar) {
       this.elements.progressBar.style.width = `${stats.progress}%`;
+      
+      // Animation de complétion
+      if (stats.progress === 100 && stats.total > 0) {
+        this.elements.progressBar.classList.add('progress-bar__fill--complete');
+        setTimeout(() => {
+          this.elements.progressBar.classList.remove('progress-bar__fill--complete');
+        }, 1000);
+      }
     }
     
     if (this.elements.progressText) {
-      this.elements.progressText.textContent = 
-        `${stats.completed} sur ${stats.total} tâches terminées (${stats.progress}%)`;
+      this.elements.progressText.innerHTML = `
+        <span>${stats.completed} sur ${stats.total} tâches terminées</span>
+        <span class="progress-percentage">${stats.progress}%</span>
+      `;
     }
   }
 
@@ -215,7 +264,7 @@ class UIManager {
     }
   }
 
-editTask(id) {
+  editTask(id) {
     const task = this.taskManager.getTask(id);
     if (!task) return;
 
@@ -249,21 +298,37 @@ editTask(id) {
   }
 
   showNotification(message, type = 'info') {
-    // Système de notifications simple
+    // Système de notifications amélioré
     const notification = document.createElement('div');
     notification.className = `notification notification--${type}`;
-    notification.textContent = message;
+    notification.innerHTML = `
+      <div class="notification__content">
+        <span class="notification__icon">
+          ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+        </span>
+        <span class="notification__message">${message}</span>
+      </div>
+    `;
     
     document.body.appendChild(notification);
     
+    // Animation d'entrée
     setTimeout(() => {
-      notification.remove();
+      notification.classList.add('notification--visible');
+    }, 100);
+    
+    // Suppression automatique
+    setTimeout(() => {
+      notification.classList.remove('notification--visible');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
     }, 3000);
   }
 
   handleKeyboard(e) {
-    // Raccourcis clavier
-    if (e.ctrlKey || e.metaKey) {
+    // Raccourcis clavier améliorés
+    if (e.altKey) {
       switch (e.key) {
         case 'n':
           e.preventDefault();

@@ -7,11 +7,28 @@ class ClarioApp {
   constructor() {
     this.taskManager = null;
     this.uiManager = null;
+    this.deferredPrompt = null;
     this.init();
   }
 
   async init() {
-const themeManager = new ThemeManager();
+    // Enregistrer le Service Worker
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('🔌 Service Worker enregistré:', registration);
+        
+        // Écouter les mises à jour
+        registration.addEventListener('updatefound', () => {
+          this.handleServiceWorkerUpdate(registration);
+        });
+      } catch (error) {
+        console.error('❌ Erreur Service Worker:', error);
+      }
+    }
+
+    // Initialiser les managers
+    const themeManager = new ThemeManager();
 
     try {
       // Initialiser le gestionnaire de tâches
@@ -28,6 +45,9 @@ const themeManager = new ThemeManager();
       this.uiManager.renderTasks();
       this.uiManager.renderProgress();
       
+      // Configurer la PWA
+      this.setupPWAInstall();
+      
       // Afficher un message de bienvenue
       this.showWelcomeMessage();
       
@@ -39,24 +59,116 @@ const themeManager = new ThemeManager();
     }
   }
 
+  // Gestion de l'installation PWA
+  setupPWAInstall() {
+    // Capturer l'événement beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.showInstallButton();
+    });
+
+    // Masquer le bouton après installation
+    window.addEventListener('appinstalled', () => {
+      this.hideInstallButton();
+      this.uiManager.showNotification('🎉 Clario installée avec succès !', 'success');
+    });
+
+    // Détecter si l'app est déjà installée
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('✅ App lancée en mode PWA');
+    }
+  }
+
+  showInstallButton() {
+    // Vérifier si le bouton n'existe pas déjà
+    if (document.querySelector('.install-btn')) return;
+
+    const installBtn = document.createElement('button');
+    installBtn.className = 'btn btn-primary install-btn';
+    installBtn.innerHTML = '📱 Installer l\'app';
+    installBtn.onclick = () => this.promptInstall();
+    installBtn.title = 'Installer Clario sur votre appareil';
+    
+    const headerControls = document.querySelector('.header-controls');
+    if (headerControls) {
+      headerControls.appendChild(installBtn);
+    }
+  }
+
+  hideInstallButton() {
+    const installBtn = document.querySelector('.install-btn');
+    if (installBtn) {
+      installBtn.remove();
+    }
+  }
+
+  async promptInstall() {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('🎉 PWA installée par l\'utilisateur');
+        this.uiManager.showNotification('Installation en cours...', 'info');
+      } else {
+        console.log('❌ Installation PWA annulée');
+      }
+      
+      this.deferredPrompt = null;
+      this.hideInstallButton();
+    }
+  }
+
+  // Gestion des mises à jour du Service Worker
+  handleServiceWorkerUpdate(registration) {
+    const newWorker = registration.installing;
+    
+    newWorker.addEventListener('statechange', () => {
+      if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+        // Nouvelle version disponible
+        this.showUpdateNotification();
+      }
+    });
+  }
+
+  showUpdateNotification() {
+    const notification = document.createElement('div');
+    notification.className = 'update-notification';
+    notification.innerHTML = `
+      <div class="update-notification__content">
+        <span>🔄 Nouvelle version disponible !</span>
+        <button onclick="window.location.reload()" class="btn btn-primary btn-sm">
+          Actualiser
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('update-notification--visible');
+    }, 100);
+  }
+
   showWelcomeMessage() {
     const stats = this.taskManager.getStats();
     
     if (stats.total === 0) {
-      this.uiManager.showNotification('Bienvenue dans Clario ! Ajoutez votre première tâche.', 'info');
+      this.uiManager.showNotification('👋 Bienvenue dans Clario ! Ajoutez votre première tâche.', 'info');
     } else {
-      this.uiManager.showNotification(`Bienvenue ! Vous avez ${stats.pending} tâches en cours.`, 'info');
+      this.uiManager.showNotification(`👋 Bienvenue ! Vous avez ${stats.pending} tâches en cours.`, 'info');
     }
   }
 
   showErrorMessage() {
     document.body.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center;">
+      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; font-family: system-ui;">
         <div>
-          <h1>❌ Erreur de chargement</h1>
-          <p>Une erreur est survenue lors du chargement de l'application.</p>
-          <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px;">
-            Recharger la page
+          <h1 style="color: #ef4444; margin-bottom: 1rem;">❌ Erreur de chargement</h1>
+          <p style="color: #64748b; margin-bottom: 2rem;">Une erreur est survenue lors du chargement de l'application.</p>
+          <button onclick="location.reload()" style="padding: 12px 24px; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            🔄 Recharger la page
           </button>
         </div>
       </div>
