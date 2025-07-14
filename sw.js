@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clario-v1.0.2';
+const CACHE_NAME = 'clario-v1.0.3';
 const urlsToCache = [
   './',
   './index.html',
@@ -22,60 +22,51 @@ const urlsToCache = [
 
 // Installation optimisée
 self.addEventListener('install', (event) => {
-  console.log('🔄 Service Worker installation...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('📦 Mise en cache des ressources...');
+        console.log('🔄 Mise en cache...');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('✅ Installation terminée');
-        return self.skipWaiting();
+        console.log('✅ Cache OK');
+        self.skipWaiting();
       })
-      .catch((error) => {
-        console.error('❌ Erreur installation:', error);
+      .catch(error => {
+        console.error('❌ Erreur cache:', error);
       })
   );
 });
 
-// Activation optimisée
+// Activation améliorée
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker activation...');
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('🗑️ Suppression cache:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-      .then(() => {
-        console.log('✅ Activation terminée');
-        return self.clients.claim();
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      console.log('✅ SW activé');
+      self.clients.claim();
+    })
   );
 });
 
-// Stratégie de cache optimisée
+// Stratégie cache-first
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        if (response) {
-          return response;
+        return response || fetch(event.request);
+      })
+      .catch(() => {
+        if (event.request.destination === 'document') {
+          return caches.match('./index.html');
         }
-        
-        return fetch(event.request).catch(() => {
-          // Fallback pour les pages HTML
-          if (event.request.destination === 'document') {
-            return caches.match('./index.html');
-          }
-        });
       })
   );
 });
