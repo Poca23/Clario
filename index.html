@@ -71,20 +71,20 @@
 
         <!-- Filter Bar -->
         <div class="filter-bar">
-            <div class="filter-bar__row">
-                <div class="input-group filter-bar__search">
-                    <input type="text" placeholder="Rechercher une tâche... (Ctrl+F)">
-                </div>
-                <div class="input-group filter-bar__select">
-                    <label for="task-filter" class="visually-hidden">Filtrer les tâches</label>
-                    <select id="task-filter" title="Filtrer les tâches">
-                        <option>Toutes les tâches</option>
-                        <option>En cours</option>
-                        <option>Terminées</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" title="Ajouter une tâche (Ctrl+N)">+ Nouvelle tâche</button>
+        <div class="filter-bar__row">
+            <div class="input-group filter-bar__search">
+                <button class="btn btn-primary" title="Ajouter une tâche (Alt+N)">+ Nouvelle tâche</button>
+                <input type="text" placeholder="Rechercher une tâche... (ou avec Alt+F)">
             </div>
+            <div class="input-group filter-bar__select">
+                <label for="task-filter" class="visually-       hidden">Filtrer les tâches</label>
+                <select id="task-filter" title="Filtrer les tâches">
+                    <option>Toutes les tâches</option>
+                    <option>En cours</option>
+                    <option>Terminées</option>
+                </select>
+            </div>
+        </div>
         </div>
 
         <!-- Tasks Container -->
