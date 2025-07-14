@@ -14,17 +14,17 @@ class ClarioApp {
   async init() {
     // Enregistrer le Service Worker
     if ('serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('🔌 Service Worker enregistré:', registration);
-        
-        // Écouter les mises à jour
-        registration.addEventListener('updatefound', () => {
-          this.handleServiceWorkerUpdate(registration);
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', {
+          scope: './'
+        })
+        .then((registration) => {
+          console.log('✅ SW enregistré:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('❌ SW échec:', error);
         });
-      } catch (error) {
-        console.error('❌ Erreur Service Worker:', error);
-      }
+      });
     }
 
     // Initialiser les managers
