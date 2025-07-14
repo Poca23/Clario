@@ -164,6 +164,11 @@
   align-items: center;
 }
 
+.filter-bar__row .btn-primary {
+  order: -1;
+  flex-shrink: 0;
+  margin-bottom: 5px;
+}
 .filter-bar__search {
   flex: 1;
 }
@@ -372,11 +377,17 @@ kbd {
     align-items: stretch;
   }
   
+  /* Bouton "Nouvelle tâche" reste en premier même en mobile */
+  .filter-bar__row .btn-primary {
+    order: -1;
+    margin-bottom: var(--space-sm);
+  }
+  
   .filter-bar__search,
   .filter-bar__select {
     width: 100%;
   }
-  
+
   .task-card__header {
     flex-direction: column;
     gap: var(--space-sm);
