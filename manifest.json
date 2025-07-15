@@ -2,36 +2,39 @@
   "name": "Clario - Gestionnaire de Tâches",
   "short_name": "Clario",
   "description": "Application moderne de gestion de tâches",
-  "start_url": "/",
+  "start_url": "/Clario/",
+  "scope": "/Clario/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#6366f1",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "./assets/favicons/favicon-16x16.png",
+      "src": "/Clario/assets/favicons/favicon-16x16.png",
       "sizes": "16x16",
       "type": "image/png"
     },
     {
-      "src": "./assets/favicons/favicon-32x32.png",
+      "src": "/Clario/assets/favicons/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "./assets/favicons/apple-touch-icon.png",
+      "src": "/Clario/assets/favicons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "./assets/icons/icon-192x192.png",
+      "src": "/Clario/assets/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "./assets/icons/icon-512x512.png",
+      "src": "/Clario/assets/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
