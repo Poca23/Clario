@@ -35,7 +35,7 @@
 
     <body>
     <div class="container">
-        <header style="padding: var(--space-xl) 0;">
+        <header class="header-padding">
             <div class="header-controls">
                 <div class="theme-toggle">
                     <button id="theme-toggle-btn" class="btn-theme">
@@ -43,7 +43,7 @@
                     </button>
                 </div>
                 <div class="keyboard-hints" id="keyboard-hints">
-                    <button class="keyboard-hints__toggle" onclick="this.parentElement.classList.toggle('keyboard-hints--expanded')" style="color: var(--text-secondary);">
+                    <buttonbutton class="keyboard-hints__toggle keyboard-hints__toggle--secondary" onclick="this.parentElement.classList.toggle('keyboard-hints--expanded')">
                         ⌨️ <span class="keyboard-text">Raccourcis</span>
                     </button>
                     <div class="keyboard-hints__content">
@@ -69,12 +69,12 @@
                 <img src="assets/images/logo_Clario_removebg-preview.png" alt="Logo Clario" class="header-logo__image">
                 <h1 class="header-logo__title">Clario</h1>
             </div>
-            <p style="color: var(--text-secondary);">Votre Gestionnaire de tâches à la fois moderne et efficace !</p>
+            <pp class="header-description">Votre Gestionnaire de tâches à la fois moderne et efficace !</p>
         </header>
 
         <!-- Progress Bar -->
         <div class="progress-bar">
-            <div class="progress-bar__fill" style="width: 0%"></div>
+            <divdiv class="progress-bar__fill"></div>
         </div>
         <div class="progress-stats">
             <span>0 sur 0 tâches terminées</span>
@@ -105,7 +105,7 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal" style="display: none;">
+        <div class="modal">
             <div class="modal__content">
                 <div class="modal__header">
                     <h2>Ajouter une tâche</h2>
@@ -128,7 +128,7 @@
                         <label for="task-description">Description</label>
                         <textarea id="task-description" rows="3" placeholder="Description optionnelle..."></textarea>
                     </div>
-                    <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+                    <divdiv class="modal-actions">
                         <button type="button" class="btn btn-secondary" onclick="uiManager.hideModal()">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
                     </div>
@@ -184,6 +184,14 @@
             clip: rect(0, 0, 0, 0);
             white-space: nowrap;
             border: 0;
+        }
+        .keyboard-hints__toggle--secondary {
+            color: var(--text-secondary);
+        }
+        .modal-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
         }
     </style>
 
