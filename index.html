@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clario - Gestionnaire de Tâches</title>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
-    
+
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicons/favicon-16x16.png">
@@ -18,14 +19,14 @@
     <meta name="apple-mobile-web-app-title" content="Clario">
     <link rel="apple-touch-icon" href="/Clario/assets/icons/icon-192x192.png">
     <link rel="apple-touch-startup-image" href="/Clario/assets/icons/icon-512x512.png">
-    
+
     <!-- PWA Meta -->
     <meta name="theme-color" content="#6366f1">
     <meta name="application-name" content="Clario">
     <meta name="apple-mobile-web-app-title" content="Clario">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="./assets/css/styles.css">
     <link rel="stylesheet" href="./assets/css/components.css">
@@ -33,17 +34,18 @@
     <link rel="stylesheet" href="./assets/css/theme.css">
 </head>
 
-    <body>
+<body>
     <div class="container">
         <header class="header-padding">
             <div class="header-controls">
                 <div class="theme-toggle">
                     <button id="theme-toggle-btn" class="btn-theme">
-                    <span class="theme-icon">🌙</span>
+                        <span class="theme-icon">🌙</span>
                     </button>
                 </div>
                 <div class="keyboard-hints" id="keyboard-hints">
-                    <buttonbutton class="keyboard-hints__toggle keyboard-hints__toggle--secondary" onclick="this.parentElement.classList.toggle('keyboard-hints--expanded')">
+                    <button class="keyboard-hints__toggle keyboard-hints__toggle--secondary"
+                        onclick="this.parentElement.classList.toggle('keyboard-hints--expanded')">
                         ⌨️ <span class="keyboard-text">Raccourcis</span>
                     </button>
                     <div class="keyboard-hints__content">
@@ -69,12 +71,12 @@
                 <img src="assets/images/logo_Clario_removebg-preview.png" alt="Logo Clario" class="header-logo__image">
                 <h1 class="header-logo__title">Clario</h1>
             </div>
-            <pp class="header-description">Votre Gestionnaire de tâches à la fois moderne et efficace !</p>
+            <p class="header-description">Votre Gestionnaire de tâches à la fois moderne et efficace !</p>
         </header>
 
         <!-- Progress Bar -->
         <div class="progress-bar">
-            <divdiv class="progress-bar__fill"></div>
+            <div class="progress-bar__fill"></div>
         </div>
         <div class="progress-stats">
             <span>0 sur 0 tâches terminées</span>
@@ -83,20 +85,20 @@
 
         <!-- Filter Bar -->
         <div class="filter-bar">
-        <div class="filter-bar__row">
-            <div class="input-group filter-bar__search">
-                <button class="btn btn-primary" title="Ajouter une tâche (Alt+N)">+ Nouvelle tâche</button>
-                <input type="text" placeholder="Rechercher une tâche... (ou avec Alt+F)">
+            <div class="filter-bar__row">
+                <div class="input-group filter-bar__search">
+                    <button class="btn btn-primary" title="Ajouter une tâche (Alt+N)">+ Nouvelle tâche</button>
+                    <input type="text" placeholder="Rechercher une tâche... (ou avec Alt+F)">
+                </div>
+                <div class="input-group filter-bar__select">
+                    <label for="task-filter" class="visually-hidden">Filtrer les tâches</label>
+                    <select id="task-filter" title="Filtrer les tâches">
+                        <option>Toutes les tâches</option>
+                        <option>En cours</option>
+                        <option>Terminées</option>
+                    </select>
+                </div>
             </div>
-            <div class="input-group filter-bar__select">
-                <label for="task-filter" class="visually-       hidden">Filtrer les tâches</label>
-                <select id="task-filter" title="Filtrer les tâches">
-                    <option>Toutes les tâches</option>
-                    <option>En cours</option>
-                    <option>Terminées</option>
-                </select>
-            </div>
-        </div>
         </div>
 
         <!-- Tasks Container -->
@@ -128,7 +130,7 @@
                         <label for="task-description">Description</label>
                         <textarea id="task-description" rows="3" placeholder="Description optionnelle..."></textarea>
                     </div>
-                    <divdiv class="modal-actions">
+                    <div class="modal-actions">
                         <button type="button" class="btn btn-secondary" onclick="uiManager.hideModal()">Annuler</button>
                         <button type="submit" class="btn btn-primary">Ajouter</button>
                     </div>
@@ -151,13 +153,28 @@
             animation: slideIn 0.3s ease;
         }
 
-        .notification--success { background: var(--success); }
-        .notification--error { background: var(--danger); }
-        .notification--info { background: var(--primary); }
+        .notification--success {
+            background: var(--success);
+        }
+
+        .notification--error {
+            background: var(--danger);
+        }
+
+        .notification--info {
+            background: var(--primary);
+        }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .task-card--completed {
@@ -185,9 +202,11 @@
             white-space: nowrap;
             border: 0;
         }
+
         .keyboard-hints__toggle--secondary {
             color: var(--text-secondary);
         }
+
         .modal-actions {
             display: flex;
             gap: var(--space-md);
@@ -198,4 +217,5 @@
     <!-- Load App -->
     <script type="module" src="assets/js/app.js"></script>
 </body>
+
 </html>

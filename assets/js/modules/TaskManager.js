@@ -1,26 +1,26 @@
-import { generateId } from '../utils/helpers.js';
+import { generateId } from "../utils/helpers.js";
 
 class TaskManager {
   constructor() {
-    this.tasks = this.loadTasks();
-    this.filters = { 
-      status: 'all', 
-      search: '' 
+    this.tasks = [];
+    this.loadTasks();
+    this.filters = {
+      status: "all",
+      search: "",
     };
     this.observers = [];
   }
-
   // Observer Pattern pour notifier les changements
   subscribe(observer) {
     this.observers.push(observer);
   }
 
   notify(event, data) {
-    this.observers.forEach(observer => observer.update(event, data));
+    this.observers.forEach((observer) => observer.update(event, data));
   }
 
   // CRUD Operations
-  addTask(title, priority = 'medium', description = '') {
+  addTask(title, priority = "medium", description = "") {
     const task = {
       id: generateId(),
       title: title.trim(),
@@ -28,74 +28,75 @@ class TaskManager {
       description: description.trim(),
       completed: false,
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
 
     this.tasks.push(task);
     this.saveTasks();
-    this.notify('task-added', task);
+    this.notify("task-added", task);
     return task;
   }
 
   updateTask(id, updates) {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
+    const taskIndex = this.tasks.findIndex((task) => task.id === id);
     if (taskIndex === -1) return null;
 
     this.tasks[taskIndex] = {
       ...this.tasks[taskIndex],
       ...updates,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
 
     this.saveTasks();
-    this.notify('task-updated', this.tasks[taskIndex]);
+    this.notify("task-updated", this.tasks[taskIndex]);
     return this.tasks[taskIndex];
   }
 
   deleteTask(id) {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
+    const taskIndex = this.tasks.findIndex((task) => task.id === id);
     if (taskIndex === -1) return false;
 
     const deletedTask = this.tasks[taskIndex];
     this.tasks.splice(taskIndex, 1);
     this.saveTasks();
-    this.notify('task-deleted', deletedTask);
+    this.notify("task-deleted", deletedTask);
     return true;
   }
 
   toggleTask(id) {
-    const task = this.tasks.find(task => task.id === id);
+    const task = this.tasks.find((task) => task.id === id);
     if (!task) return null;
 
     task.completed = !task.completed;
     task.updatedAt = Date.now();
     this.saveTasks();
-    this.notify('task-toggled', task);
+    this.notify("task-toggled", task);
     return task;
   }
 
   // Méthode pour éditer une tâche (À AJOUTER)
   editTask(id, title, priority, description) {
-    const task = this.tasks.find(task => task.id === id);
+    const task = this.tasks.find((task) => task.id === id);
     if (!task) return null;
 
     // Validation
-    if (!title || title.trim() === '') return null;
+    if (!title || title.trim() === "") return null;
 
     // Mise à jour
     task.title = title.trim();
     task.priority = priority || task.priority;
-    task.description = description !== undefined ? description.trim() : task.description;
+    task.description =
+      description !== undefined ? description.trim() : task.description;
     task.updatedAt = Date.now();
 
     this.saveTasks();
-    this.notify('task-updated', task);
+    this.notify("task-updated", task);
     return task;
   }
 
   // Méthode pour récupérer une tâche spécifique
   getTask(id) {
-    return this.tasks.find(task => task.id === id);
+    return this.tasks.find((task) => task.id === id);
   }
 
   // Filtres et recherche
@@ -103,18 +104,21 @@ class TaskManager {
     let filteredTasks = [...this.tasks];
 
     // Filtre par statut
-    if (this.filters.status !== 'all') {
-      filteredTasks = filteredTasks.filter(task => {
-        return this.filters.status === 'completed' ? task.completed : !task.completed;
+    if (this.filters.status !== "all") {
+      filteredTasks = filteredTasks.filter((task) => {
+        return this.filters.status === "completed"
+          ? task.completed
+          : !task.completed;
       });
     }
 
     // Filtre par recherche
     if (this.filters.search) {
       const searchTerm = this.filters.search.toLowerCase();
-      filteredTasks = filteredTasks.filter(task => 
-        task.title.toLowerCase().includes(searchTerm) ||
-        task.description.toLowerCase().includes(searchTerm)
+      filteredTasks = filteredTasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm) ||
+          task.description.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -123,52 +127,50 @@ class TaskManager {
 
   setFilters(filters) {
     this.filters = { ...this.filters, ...filters };
-    this.notify('filters-changed', this.filters);
+    this.notify("filters-changed", this.filters);
   }
 
   // Statistiques
   getStats() {
     const total = this.tasks.length;
-    const completed = this.tasks.filter(task => task.completed).length;
+    const completed = this.tasks.filter((task) => task.completed).length;
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     return {
       total,
       completed,
       pending: total - completed,
-      progress
+      progress,
     };
   }
 
   // Persistance LocalStorage
   saveTasks() {
     try {
-      localStorage.setItem('clario-tasks', JSON.stringify(this.tasks));
-      localStorage.setItem('clario-filters', JSON.stringify(this.filters));
+      localStorage.setItem("clario-tasks", JSON.stringify(this.tasks));
+      localStorage.setItem("clario-filters", JSON.stringify(this.filters));
     } catch (error) {
-      console.error('Erreur de sauvegarde:', error);
-      this.notify('storage-error', { type: 'save', error });
+      console.error("Erreur de sauvegarde:", error);
+      this.notify("storage-error", { type: "save", error });
     }
   }
 
   loadTasks() {
     try {
-      const savedTasks = localStorage.getItem('clario-tasks');
-      const savedFilters = localStorage.getItem('clario-filters');
-      
+      const savedTasks = localStorage.getItem("clario-tasks");
+      const savedFilters = localStorage.getItem("clario-filters");
+
       if (savedTasks) {
         this.tasks = JSON.parse(savedTasks);
       }
-      
+
       if (savedFilters) {
         this.filters = JSON.parse(savedFilters);
       }
-      
-      return this.tasks || [];
+      // ← SUPPRIMER le "return this.tasks || []"
     } catch (error) {
-      console.error('Erreur de chargement:', error);
-      this.notify('storage-error', { type: 'load', error });
-      return [];
+      console.error("Erreur de chargement:", error);
+      this.notify("storage-error", { type: "load", error });
     }
   }
 }
