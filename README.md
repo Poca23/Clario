@@ -14,7 +14,7 @@
 
 ## 🚀 Demo Live
 
-**[👉 Accéder à l'application](https://votre-username.github.io/clario)**
+**[👉 Accéder à l'application](https://poca23.github.io/Clario/)**
 
 ## 🛠️ Tech Stack
 
@@ -40,3 +40,4 @@ git clone https://github.com/votre-username/clario.git
 # Lancer en local
 cd clario
 npx serve .
+```
