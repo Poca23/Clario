@@ -96,6 +96,9 @@ class ClarioApp {
   async syncOnStartup() {
     try {
       const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
+
+      StorageService.saveTasks(firebaseTasks);
+
       this.tasks = firebaseTasks;
       this.renderTasks();
       console.log("✅ Sync:", this.tasks.length, "tâches affichées");
