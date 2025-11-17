@@ -14,11 +14,11 @@ import { SyncService } from "./services/sync.service.js";
 import { OfflineService } from "./services/offline.service.js";
 import { TaskCard } from "./components/TaskCard.js";
 import { TaskForm } from "./components/TaskForm.js";
-import * as DateUtils from "./utils/date.utils.js";
+import { FilterBar } from "./components/FilterBar.js";
 
 class ClarioApp {
   constructor() {
-    this.checkAuth(); // ⚠️ Vérifier auth AVANT tout
+    this.checkAuth();
   }
 
   /**
@@ -28,10 +28,10 @@ class ClarioApp {
     AuthService.onAuthChange((user) => {
       if (user) {
         console.log("✅ User connecté:", user.email);
-        this.initApp(user); // Lancer l'app
+        this.initApp(user);
       } else {
         console.log("⚠️ Non connecté");
-        new LoginForm(); // Afficher login
+        new LoginForm();
       }
     });
   }
@@ -40,19 +40,15 @@ class ClarioApp {
    * 🚀 Initialise l'app après authentification
    */
   async initApp(user) {
-    this.userId = user.uid; // ✅ ID réel utilisateur
+    this.userId = user.uid;
 
     // Services
     this.offlineService = new OfflineService();
 
     // État application
     this.tasks = [];
-    this.currentFilter = "all";
     this.searchQuery = "";
     this.currentTheme = localStorage.getItem("theme") || "light";
-    this.currentPriority = "all";
-    this.currentDateFilter = "all";
-    this.currentSort = "newest";
 
     // Éléments DOM
     this.tasksContainer = document.getElementById("tasks-container");
@@ -61,36 +57,17 @@ class ClarioApp {
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
 
-    // ✅ 🆕 DROPDOWNS (LIGNE 70)
-    this.filterDropdowns = {
-      status: {
-        btn: document.getElementById("status-btn"),
-        menu: document.getElementById("status-menu"),
-        items: document.querySelectorAll("#status-menu .filter-item"),
-      },
-      date: {
-        btn: document.getElementById("date-btn"),
-        menu: document.getElementById("date-menu"),
-        items: document.querySelectorAll("#date-menu .filter-item"),
-      },
-      priority: {
-        btn: document.getElementById("priority-btn"),
-        menu: document.getElementById("priority-menu"),
-        items: document.querySelectorAll("#priority-menu .filter-item"),
-      },
-      sort: {
-        btn: document.getElementById("sort-btn"),
-        menu: document.getElementById("sort-menu"),
-        items: document.querySelectorAll("#sort-menu .filter-item"),
-      },
-    };
-
     // Composants
     const modal = document.getElementById("task-modal");
     const form = document.getElementById("task-form");
     this.taskForm = new TaskForm(modal, form);
 
-    // Lancer initialisation
+    // ✅ NOUVEAU: FilterBar
+    this.filterBar = new FilterBar((filters) => {
+      this.currentFilters = filters;
+      this.renderTasks();
+    });
+
     await this.init();
   }
 
@@ -100,13 +77,8 @@ class ClarioApp {
   async init() {
     console.log("🚀 Initialisation Clario...");
 
-    // 1. Charger local d'abord
     this.loadTasks();
-
-    // 2. Sync Firebase au démarrage
     await this.syncOnStartup();
-
-    // 3. Reste du code...
     this.applyTheme();
     this.bindEvents();
     this.setupOfflineMode();
@@ -117,7 +89,7 @@ class ClarioApp {
   }
 
   /**
-   * Sync au démarrage avec userId réel
+   * Sync au démarrage
    */
   async syncOnStartup() {
     try {
@@ -125,44 +97,38 @@ class ClarioApp {
       StorageService.saveTasks(firebaseTasks);
       this.tasks = firebaseTasks;
       this.renderTasks();
-      console.log("✅ Sync:", this.tasks.length, "tâches affichées");
+      console.log("✅ Sync:", this.tasks.length, "tâches");
     } catch (error) {
       console.error("❌ Sync erreur:", error);
     }
   }
 
   /**
-   * Charge les tâches depuis le storage
+   * Charge les tâches
    */
   loadTasks() {
     try {
       this.tasks = StorageService.getTasks();
       console.log(`📦 ${this.tasks.length} tâches chargées`);
     } catch (error) {
-      console.error("❌ Erreur chargement tâches:", error);
+      console.error("❌ Erreur chargement:", error);
       this.showNotification("Erreur de chargement", "error");
     }
   }
 
   /**
-   * Lie tous les événements de l'interface
+   * Lie les événements
    */
   bindEvents() {
-    // Bouton ajout tâche
     this.addTaskBtn.addEventListener("click", () => {
       this.openCreateForm();
     });
 
-    // Recherche temps réel
     this.searchInput.addEventListener("input", (e) => {
       this.searchQuery = e.target.value.toLowerCase();
       this.renderTasks();
     });
 
-    // ✅ 🆕 DROPDOWNS (LIGNE 160)
-    this.bindDropdowns();
-
-    // Actions sur les cards (event delegation)
     this.tasksContainer.addEventListener("click", (e) => {
       const button = e.target.closest(".task-card__btn");
       if (!button) return;
@@ -174,17 +140,14 @@ class ClarioApp {
       this.handleTaskAction(taskId, action);
     });
 
-    // Bouton sync
     this.syncBtn.addEventListener("click", () => {
       this.syncWithFirebase();
     });
 
-    // Toggle thème
     this.themeBtn.addEventListener("click", () => {
       this.toggleTheme();
     });
 
-    // Bouton déconnexion
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async () => {
@@ -193,116 +156,24 @@ class ClarioApp {
       });
     }
 
-    // Raccourcis clavier
     this.setupKeyboardShortcuts();
   }
 
-  // ✅ 🆕 NOUVELLES MÉTHODES DROPDOWNS (LIGNE 200)
   /**
-   * 🎯 Gestion dropdowns
-   */
-  bindDropdowns() {
-    Object.entries(this.filterDropdowns).forEach(([key, dropdown]) => {
-      // Toggle menu au clic
-      dropdown.btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.toggleDropdown(key);
-      });
-
-      // Sélection item
-      dropdown.items.forEach((item) => {
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.handleDropdownSelect(key, item);
-        });
-      });
-    });
-
-    // Fermer au clic extérieur
-    document.addEventListener("click", () => {
-      this.closeAllDropdowns();
-    });
-  }
-
-  /**
-   * Toggle un dropdown
-   */
-  toggleDropdown(key) {
-    const dropdown = this.filterDropdowns[key];
-    const isActive = dropdown.menu.classList.contains("active");
-
-    // Fermer tous
-    this.closeAllDropdowns();
-
-    // Ouvrir celui-ci si fermé
-    if (!isActive) {
-      dropdown.menu.classList.add("active");
-    }
-  }
-
-  /**
-   * Ferme tous les dropdowns
-   */
-  closeAllDropdowns() {
-    Object.values(this.filterDropdowns).forEach((dropdown) => {
-      dropdown.menu.classList.remove("active");
-    });
-  }
-
-  /**
-   * Gère la sélection d'un item
-   */
-  handleDropdownSelect(type, item) {
-    const dropdown = this.filterDropdowns[type];
-
-    // Mettre à jour actifs
-    dropdown.items.forEach((i) => i.classList.remove("active"));
-    item.classList.add("active");
-
-    // Appliquer filtre
-    switch (type) {
-      case "status":
-        this.currentFilter = item.dataset.filter;
-        break;
-      case "date":
-        this.currentDateFilter = item.dataset.date;
-        break;
-      case "priority":
-        this.currentPriority = item.dataset.priority;
-        break;
-      case "sort":
-        this.currentSort = item.dataset.sort;
-        break;
-    }
-
-    // Mettre à jour bouton
-    if (item.classList.contains("active")) {
-      dropdown.btn.classList.add("active");
-    }
-
-    // Fermer menu + render
-    dropdown.menu.classList.remove("active");
-    this.renderTasks();
-  }
-
-  /**
-   * Configure les raccourcis clavier
+   * Raccourcis clavier
    */
   setupKeyboardShortcuts() {
     document.addEventListener("keydown", (e) => {
-      // Ctrl/Cmd + N : Nouvelle tâche
       if ((e.ctrlKey || e.metaKey) && e.key === "n") {
         e.preventDefault();
         this.openCreateForm();
       }
 
-      // Ctrl/Cmd + S : Synchroniser
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
         this.syncWithFirebase();
       }
 
-      // Ctrl/Cmd + K : Focus recherche
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         this.searchInput.focus();
@@ -311,7 +182,7 @@ class ClarioApp {
   }
 
   /**
-   * Configure le mode hors ligne
+   * Mode hors ligne
    */
   setupOfflineMode() {
     this.offlineService.addListener((status, isOnline) => {
@@ -324,11 +195,11 @@ class ClarioApp {
       this.updateSyncButton(isOnline);
     });
 
-    // État initial
     this.updateSyncButton(this.offlineService.isOnline);
   }
+
   /**
-   * Ouvre le formulaire de création
+   * Ouvre formulaire création
    */
   openCreateForm() {
     this.taskForm.open((taskData) => {
@@ -337,8 +208,7 @@ class ClarioApp {
   }
 
   /**
-   * Ouvre le formulaire d'édition
-   * @param {string} taskId - ID de la tâche
+   * Ouvre formulaire édition
    */
   openEditForm(taskId) {
     const task = this.tasks.find((t) => t.id === taskId);
@@ -350,8 +220,7 @@ class ClarioApp {
   }
 
   /**
-   * Crée une nouvelle tâche
-   * @param {Object} taskData - Données de la tâche
+   * Crée une tâche
    */
   createTask(taskData) {
     try {
@@ -364,20 +233,17 @@ class ClarioApp {
       this.renderTasks();
       this.showNotification("Tâche créée !", "success");
 
-      // Sync auto si en ligne
       if (this.offlineService.isOnline) {
         this.syncWithFirebase();
       }
     } catch (error) {
-      console.error("❌ Erreur création tâche:", error);
+      console.error("❌ Erreur création:", error);
       this.showNotification("Erreur de création", "error");
     }
   }
 
   /**
    * Met à jour une tâche
-   * @param {string} taskId - ID de la tâche
-   * @param {Object} updates - Modifications
    */
   updateTask(taskId, updates) {
     try {
@@ -391,19 +257,17 @@ class ClarioApp {
       this.renderTasks();
       this.showNotification("Tâche modifiée !", "success");
 
-      // Sync auto
       if (this.offlineService.isOnline) {
         this.syncWithFirebase();
       }
     } catch (error) {
-      console.error("❌ Erreur mise à jour:", error);
+      console.error("❌ Erreur MAJ:", error);
       this.showNotification("Erreur de modification", "error");
     }
   }
 
   /**
    * Supprime une tâche
-   * @param {string} taskId - ID de la tâche
    */
   deleteTask(taskId) {
     if (!confirm("Supprimer cette tâche ?")) return;
@@ -414,7 +278,6 @@ class ClarioApp {
       this.renderTasks();
       this.showNotification("Tâche supprimée", "success");
 
-      // Sync Firebase
       if (this.offlineService.isOnline) {
         SyncService.deleteFromFirebase(taskId);
       }
@@ -425,8 +288,7 @@ class ClarioApp {
   }
 
   /**
-   * Toggle le statut d'une tâche
-   * @param {string} taskId - ID de la tâche
+   * Toggle statut tâche
    */
   toggleTask(taskId) {
     try {
@@ -437,14 +299,12 @@ class ClarioApp {
         completed: !task.completed,
       });
     } catch (error) {
-      console.error("❌ Erreur toggle tâche:", error);
+      console.error("❌ Erreur toggle:", error);
     }
   }
 
   /**
-   * Gère les actions sur les cartes
-   * @param {string} taskId - ID de la tâche
-   * @param {string} action - Action à effectuer
+   * Gère les actions
    */
   handleTaskAction(taskId, action) {
     switch (action) {
@@ -461,26 +321,26 @@ class ClarioApp {
   }
 
   /**
-   * ✅ 🔍 Applique tous les filtres
-   * @returns {Array} Tâches filtrées
+   * ✅ Applique tous les filtres
    */
   getFilteredTasks() {
     let filtered = [...this.tasks];
+    const filters = this.filterBar.getFilters();
 
     // Filtre statut
-    if (this.currentFilter === "pending") {
+    if (filters.status === "pending") {
       filtered = filtered.filter((t) => !t.completed);
-    } else if (this.currentFilter === "completed") {
+    } else if (filters.status === "completed") {
       filtered = filtered.filter((t) => t.completed);
     }
 
     // Filtre priorité
-    if (this.currentPriority !== "all") {
-      filtered = filtered.filter((t) => t.priority === this.currentPriority);
+    if (filters.priority !== "all") {
+      filtered = filtered.filter((t) => t.priority === filters.priority);
     }
 
     // Filtre date
-    if (this.currentDateFilter !== "all") {
+    if (filters.date !== "all") {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -488,7 +348,7 @@ class ClarioApp {
         if (!task.dueDate) return false;
         const dueDate = new Date(task.dueDate);
 
-        switch (this.currentDateFilter) {
+        switch (filters.date) {
           case "today":
             return dueDate.toDateString() === today.toDateString();
           case "week":
@@ -508,7 +368,7 @@ class ClarioApp {
       });
     }
 
-    // Filtre par recherche
+    // Recherche
     if (this.searchQuery) {
       filtered = filtered.filter(
         (t) =>
@@ -518,17 +378,16 @@ class ClarioApp {
       );
     }
 
-    // Tri
-    return this.sortTasks(filtered);
+    return this.sortTasks(filtered, filters.sort);
   }
 
   /**
-   * ✅ 📊 Trie les tâches
+   * ✅ Trie les tâches
    */
-  sortTasks(tasks) {
+  sortTasks(tasks, sortType) {
     const sorted = [...tasks];
 
-    switch (this.currentSort) {
+    switch (sortType) {
       case "oldest":
         return sorted.sort((a, b) => a.createdAt - b.createdAt);
       case "priority":
@@ -549,7 +408,7 @@ class ClarioApp {
   }
 
   /**
-   * ✅ Affiche les tâches dans le DOM
+   * ✅ Affiche les tâches
    */
   renderTasks() {
     const filtered = this.getFilteredTasks();
@@ -569,7 +428,7 @@ class ClarioApp {
   }
 
   /**
-   * Synchronise avec Firebase (userId réel)
+   * Sync Firebase
    */
   async syncWithFirebase() {
     if (!this.offlineService.isOnline) {
@@ -596,8 +455,7 @@ class ClarioApp {
   }
 
   /**
-   * Met à jour l'apparence du bouton sync
-   * @param {boolean} isOnline - État de la connexion
+   * Bouton sync
    */
   updateSyncButton(isOnline) {
     this.syncBtn.disabled = !isOnline;
@@ -605,7 +463,7 @@ class ClarioApp {
   }
 
   /**
-   * Toggle le thème sombre/clair
+   * Toggle thème
    */
   toggleTheme() {
     this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
@@ -614,7 +472,7 @@ class ClarioApp {
   }
 
   /**
-   * Applique le thème actuel
+   * Applique thème
    */
   applyTheme() {
     document.documentElement.setAttribute("data-theme", this.currentTheme);
@@ -624,18 +482,12 @@ class ClarioApp {
   }
 
   /**
-   * Affiche une notification
-   * @param {string} message - Message à afficher
-   * @param {string} type - Type ('success', 'error', 'warning', 'info')
+   * Notification
    */
   showNotification(message, type = "info") {
     console.log(`[${type.toUpperCase()}] ${message}`);
   }
 
-  /**
-   * Icône lune (mode clair)
-   * @returns {string} SVG
-   */
   getMoonIcon() {
     return `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -644,10 +496,6 @@ class ClarioApp {
     `;
   }
 
-  /**
-   * Icône soleil (mode sombre)
-   * @returns {string} SVG
-   */
   getSunIcon() {
     return `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -657,13 +505,13 @@ class ClarioApp {
   }
 
   /**
-   * Enregistre le Service Worker pour PWA
+   * Service Worker
    */
   async registerServiceWorker() {
     if ("serviceWorker" in navigator) {
       try {
         const registration = await navigator.serviceWorker.register("/sw.js");
-        console.log("✅ Service Worker enregistré:", registration.scope);
+        console.log("✅ Service Worker:", registration.scope);
 
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
@@ -678,19 +526,16 @@ class ClarioApp {
           });
         });
       } catch (error) {
-        console.error("❌ Erreur Service Worker:", error);
+        console.error("❌ Service Worker:", error);
       }
     }
   }
 
-  /**
-   * Affiche une notification de mise à jour disponible
-   */
   showUpdateNotification() {
     const notification = document.createElement("div");
     notification.className = "update-notification";
     notification.innerHTML = `
-      <p>Une nouvelle version est disponible !</p>
+      <p>Nouvelle version disponible !</p>
       <button id="update-btn" class="btn-primary">Mettre à jour</button>
     `;
 
@@ -703,10 +548,8 @@ class ClarioApp {
   }
 }
 
-// Initialiser l'application au chargement
 document.addEventListener("DOMContentLoaded", () => {
   window.clarioApp = new ClarioApp();
 });
 
-// Exporter pour utilisation
 export default ClarioApp;
