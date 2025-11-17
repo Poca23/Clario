@@ -50,8 +50,6 @@ class ClarioApp {
     this.currentFilter = "all";
     this.searchQuery = "";
     this.currentTheme = localStorage.getItem("theme") || "light";
-
-    // ✅ NOUVEAUX FILTRES
     this.currentPriority = "all";
     this.currentDateFilter = "all";
     this.currentSort = "newest";
@@ -59,15 +57,33 @@ class ClarioApp {
     // Éléments DOM
     this.tasksContainer = document.getElementById("tasks-container");
     this.searchInput = document.getElementById("search-input");
-    this.filterChips = document.querySelectorAll("[data-filter]");
     this.addTaskBtn = document.getElementById("add-task-btn");
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
 
-    // ✅ NOUVEAUX ÉLÉMENTS FILTRES
-    this.priorityChips = document.querySelectorAll("[data-priority]");
-    this.dateChips = document.querySelectorAll("[data-date]");
-    this.sortSelect = document.getElementById("sort-select");
+    // ✅ 🆕 DROPDOWNS (LIGNE 70)
+    this.filterDropdowns = {
+      status: {
+        btn: document.getElementById("status-btn"),
+        menu: document.getElementById("status-menu"),
+        items: document.querySelectorAll("#status-menu .filter-item"),
+      },
+      date: {
+        btn: document.getElementById("date-btn"),
+        menu: document.getElementById("date-menu"),
+        items: document.querySelectorAll("#date-menu .filter-item"),
+      },
+      priority: {
+        btn: document.getElementById("priority-btn"),
+        menu: document.getElementById("priority-menu"),
+        items: document.querySelectorAll("#priority-menu .filter-item"),
+      },
+      sort: {
+        btn: document.getElementById("sort-btn"),
+        menu: document.getElementById("sort-menu"),
+        items: document.querySelectorAll("#sort-menu .filter-item"),
+      },
+    };
 
     // Composants
     const modal = document.getElementById("task-modal");
@@ -106,9 +122,7 @@ class ClarioApp {
   async syncOnStartup() {
     try {
       const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
-
       StorageService.saveTasks(firebaseTasks);
-
       this.tasks = firebaseTasks;
       this.renderTasks();
       console.log("✅ Sync:", this.tasks.length, "tâches affichées");
@@ -145,30 +159,8 @@ class ClarioApp {
       this.renderTasks();
     });
 
-    // Filtres statut
-    this.filterChips.forEach((chip) => {
-      chip.addEventListener("click", (e) => {
-        this.setFilter(e.target.dataset.filter);
-      });
-    });
-
-    // ✅ FILTRES PRIORITÉ
-    this.priorityChips.forEach((chip) => {
-      chip.addEventListener("click", () => this.handlePriorityFilter(chip));
-    });
-
-    // ✅ FILTRES DATE
-    this.dateChips.forEach((chip) => {
-      chip.addEventListener("click", () => this.handleDateFilter(chip));
-    });
-
-    // ✅ TRI
-    if (this.sortSelect) {
-      this.sortSelect.addEventListener("change", (e) => {
-        this.currentSort = e.target.value;
-        this.renderTasks();
-      });
-    }
+    // ✅ 🆕 DROPDOWNS (LIGNE 160)
+    this.bindDropdowns();
 
     // Actions sur les cards (event delegation)
     this.tasksContainer.addEventListener("click", (e) => {
@@ -203,6 +195,94 @@ class ClarioApp {
 
     // Raccourcis clavier
     this.setupKeyboardShortcuts();
+  }
+
+  // ✅ 🆕 NOUVELLES MÉTHODES DROPDOWNS (LIGNE 200)
+  /**
+   * 🎯 Gestion dropdowns
+   */
+  bindDropdowns() {
+    Object.entries(this.filterDropdowns).forEach(([key, dropdown]) => {
+      // Toggle menu au clic
+      dropdown.btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggleDropdown(key);
+      });
+
+      // Sélection item
+      dropdown.items.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.handleDropdownSelect(key, item);
+        });
+      });
+    });
+
+    // Fermer au clic extérieur
+    document.addEventListener("click", () => {
+      this.closeAllDropdowns();
+    });
+  }
+
+  /**
+   * Toggle un dropdown
+   */
+  toggleDropdown(key) {
+    const dropdown = this.filterDropdowns[key];
+    const isActive = dropdown.menu.classList.contains("active");
+
+    // Fermer tous
+    this.closeAllDropdowns();
+
+    // Ouvrir celui-ci si fermé
+    if (!isActive) {
+      dropdown.menu.classList.add("active");
+    }
+  }
+
+  /**
+   * Ferme tous les dropdowns
+   */
+  closeAllDropdowns() {
+    Object.values(this.filterDropdowns).forEach((dropdown) => {
+      dropdown.menu.classList.remove("active");
+    });
+  }
+
+  /**
+   * Gère la sélection d'un item
+   */
+  handleDropdownSelect(type, item) {
+    const dropdown = this.filterDropdowns[type];
+
+    // Mettre à jour actifs
+    dropdown.items.forEach((i) => i.classList.remove("active"));
+    item.classList.add("active");
+
+    // Appliquer filtre
+    switch (type) {
+      case "status":
+        this.currentFilter = item.dataset.filter;
+        break;
+      case "date":
+        this.currentDateFilter = item.dataset.date;
+        break;
+      case "priority":
+        this.currentPriority = item.dataset.priority;
+        break;
+      case "sort":
+        this.currentSort = item.dataset.sort;
+        break;
+    }
+
+    // Mettre à jour bouton
+    if (item.classList.contains("active")) {
+      dropdown.btn.classList.add("active");
+    }
+
+    // Fermer menu + render
+    dropdown.menu.classList.remove("active");
+    this.renderTasks();
   }
 
   /**
@@ -247,7 +327,6 @@ class ClarioApp {
     // État initial
     this.updateSyncButton(this.offlineService.isOnline);
   }
-
   /**
    * Ouvre le formulaire de création
    */
@@ -382,45 +461,6 @@ class ClarioApp {
   }
 
   /**
-   * Applique un filtre aux tâches
-   * @param {string} filter - Type de filtre ('all', 'pending', 'completed')
-   */
-  setFilter(filter) {
-    this.currentFilter = filter;
-
-    // Mettre à jour UI
-    this.filterChips.forEach((chip) => {
-      chip.classList.toggle("active", chip.dataset.filter === filter);
-    });
-
-    this.renderTasks();
-  }
-
-  /**
-   * ✅ 🎯 Filtre par priorité
-   */
-  handlePriorityFilter(chip) {
-    this.currentPriority = chip.dataset.priority;
-
-    this.priorityChips.forEach((c) => c.classList.remove("active"));
-    chip.classList.add("active");
-
-    this.renderTasks();
-  }
-
-  /**
-   * ✅ 📅 Filtre par date
-   */
-  handleDateFilter(chip) {
-    this.currentDateFilter = chip.dataset.date;
-
-    this.dateChips.forEach((c) => c.classList.remove("active"));
-    chip.classList.add("active");
-
-    this.renderTasks();
-  }
-
-  /**
    * ✅ 🔍 Applique tous les filtres
    * @returns {Array} Tâches filtrées
    */
@@ -512,7 +552,7 @@ class ClarioApp {
    * ✅ Affiche les tâches dans le DOM
    */
   renderTasks() {
-    const filtered = this.getFilteredTasks(); // ✅ Utiliser méthode filtre
+    const filtered = this.getFilteredTasks();
 
     if (filtered.length === 0) {
       this.tasksContainer.innerHTML = `
@@ -542,13 +582,10 @@ class ClarioApp {
 
     try {
       await SyncService.syncToFirebase(this.userId);
-
       const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
       StorageService.saveTasks(firebaseTasks);
-
       this.tasks = firebaseTasks;
       this.renderTasks();
-
       this.showNotification("Synchronisé !", "success");
     } catch (error) {
       console.error("❌ Erreur sync:", error);
@@ -581,8 +618,6 @@ class ClarioApp {
    */
   applyTheme() {
     document.documentElement.setAttribute("data-theme", this.currentTheme);
-
-    // Mettre à jour l'icône
     const icon = this.themeBtn.querySelector("svg");
     icon.innerHTML =
       this.currentTheme === "dark" ? this.getSunIcon() : this.getMoonIcon();
@@ -594,7 +629,6 @@ class ClarioApp {
    * @param {string} type - Type ('success', 'error', 'warning', 'info')
    */
   showNotification(message, type = "info") {
-    // TODO: Implémenter système de toast
     console.log(`[${type.toUpperCase()}] ${message}`);
   }
 
@@ -631,7 +665,6 @@ class ClarioApp {
         const registration = await navigator.serviceWorker.register("/sw.js");
         console.log("✅ Service Worker enregistré:", registration.scope);
 
-        // Écouter les mises à jour
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
 
@@ -640,7 +673,6 @@ class ClarioApp {
               newWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
-              // Nouvelle version disponible
               this.showUpdateNotification();
             }
           });

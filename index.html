@@ -75,51 +75,71 @@
 
     <!-- 🎯 Main -->
     <main class="app-main">
-        <!-- 🔍 Barre de filtres et recherche -->
+        <!-- 🔍 Barre de filtres compacte -->
         <section class="filter-bar">
             <!-- Recherche -->
-            <input type="search" id="search-input" placeholder="🔍 Rechercher une tâche..." aria-label="Rechercher">
+            <input type="search" id="search-input" placeholder="🔍 Rechercher..." aria-label="Rechercher">
 
-            <!-- Filtres Statut -->
-            <div class="filter-group">
-                <div class="filter-chips" role="group" aria-label="Filtres statut">
-                    <button data-filter="all" class="chip active">Toutes</button>
-                    <button data-filter="pending" class="chip">⏳ En cours</button>
-                    <button data-filter="completed" class="chip">✔️ Terminées</button>
+            <!-- Filtres compacts -->
+            <div class="filter-compact">
+                <!-- Statut -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="status-btn" aria-label="Filtrer par statut">
+                        <span class="filter-icon">📋</span>
+                        <span class="filter-text">Statut</span>
+                    </button>
+                    <div class="filter-menu" id="status-menu">
+                        <button data-filter="all" class="filter-item active">✅ Toutes</button>
+                        <button data-filter="pending" class="filter-item">⏳ En cours</button>
+                        <button data-filter="completed" class="filter-item">✔️ Terminées</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Filtres Priorité -->
-            <div class="filter-group">
-                <div class="filter-chips" role="group" aria-label="Filtres priorité">
-                    <button data-priority="all" class="chip active">Toutes</button>
-                    <button data-priority="high" class="chip">🔴 Haute</button>
-                    <button data-priority="medium" class="chip">🟡 Moyenne</button>
-                    <button data-priority="low" class="chip">🟢 Basse</button>
+                <!-- Période -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="date-btn" aria-label="Filtrer par période">
+                        <span class="filter-icon">📅</span>
+                        <span class="filter-text">Date</span>
+                    </button>
+                    <div class="filter-menu" id="date-menu">
+                        <button data-date="all" class="filter-item active">📆 Toutes</button>
+                        <button data-date="today" class="filter-item">📅 Aujourd'hui</button>
+                        <button data-date="week" class="filter-item">📆 Semaine</button>
+                        <button data-date="month" class="filter-item">🗓️ Mois</button>
+                        <button data-date="overdue" class="filter-item">⚠️ Retard</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Filtres Date -->
-            <div class="filter-group">
-                <div class="filter-chips" role="group" aria-label="Filtres échéance">
-                    <button data-date="all" class="chip active">Toutes</button>
-                    <button data-date="today" class="chip">📅 Aujourd'hui</button>
-                    <button data-date="week" class="chip">📆 Cette semaine</button>
-                    <button data-date="month" class="chip">🗓️ Ce mois</button>
-                    <button data-date="overdue" class="chip">⚠️ En retard</button>
+                <!-- Priorité -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="priority-btn" aria-label="Filtrer par priorité">
+                        <span class="filter-icon">🎯</span>
+                        <span class="filter-text">Prior</span>
+                    </button>
+                    <div class="filter-menu" id="priority-menu">
+                        <button data-priority="all" class="filter-item active">⭐ Toutes</button>
+                        <button data-priority="high" class="filter-item">🔴 Haute</button>
+                        <button data-priority="medium" class="filter-item">🟡 Moyenne</button>
+                        <button data-priority="low" class="filter-item">🟢 Basse</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Tri -->
-            <div class="filter-group">
-                <select id="sort-select" class="sort-select" aria-label="Trier par">
-                    <option value="newest">📊 Plus récentes</option>
-                    <option value="oldest">📈 Plus anciennes</option>
-                    <option value="priority">🎯 Par priorité</option>
-                    <option value="dueDate">📅 Par échéance</option>
-                </select>
+                <!-- Tri -->
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="sort-btn" aria-label="Trier">
+                        <span class="filter-icon">⬇️</span>
+                        <span class="filter-text">Tri</span>
+                    </button>
+                    <div class="filter-menu" id="sort-menu">
+                        <button data-sort="newest" class="filter-item active">🆕 Récent</button>
+                        <button data-sort="oldest" class="filter-item">📅 Ancien</button>
+                        <button data-sort="priority" class="filter-item">🎯 Priorité</button>
+                        <button data-sort="dueDate" class="filter-item">⏰ Échéance</button>
+                    </div>
+                </div>
             </div>
         </section>
+
 
         <!-- Liste des tâches -->
         <section id="tasks-container" class="tasks-grid" role="list" aria-label="Liste des tâches">
