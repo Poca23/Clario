@@ -4,9 +4,11 @@
  * WHO: Contrôleur principal de l'application
  * WHAT: Orchestre tous les services et composants
  * WHY: Point d'entrée unique + coordination
- * HOW: Pattern MVC + Event delegation
+ * HOW: Pattern MVC + Event delegation + Auth Firebase
  */
 
+import { AuthService } from "./services/auth.service.js";
+import { LoginForm } from "./components/LoginForm.js";
 import { StorageService } from "./services/storage.service.js";
 import { SyncService } from "./services/sync.service.js";
 import { OfflineService } from "./services/offline.service.js";
@@ -16,6 +18,30 @@ import * as DateUtils from "./utils/date.utils.js";
 
 class ClarioApp {
   constructor() {
+    this.checkAuth(); // ⚠️ Vérifier auth AVANT tout
+  }
+
+  /**
+   * 🔐 Vérifie l'authentification
+   */
+  checkAuth() {
+    AuthService.onAuthChange((user) => {
+      if (user) {
+        console.log("✅ User connecté:", user.email);
+        this.initApp(user); // Lancer l'app
+      } else {
+        console.log("⚠️ Non connecté");
+        new LoginForm(); // Afficher login
+      }
+    });
+  }
+
+  /**
+   * 🚀 Initialise l'app après authentification
+   */
+  async initApp(user) {
+    this.userId = user.uid; // ✅ ID réel utilisateur
+
     // Services
     this.offlineService = new OfflineService();
 
@@ -38,15 +64,15 @@ class ClarioApp {
     const form = document.getElementById("task-form");
     this.taskForm = new TaskForm(modal, form);
 
-    // Initialisation
-    this.init();
+    // Lancer initialisation
+    await this.init();
   }
 
   /**
    * Initialise l'application
    */
   async init() {
-    console.log("🚀 Initialisation Clario V2...");
+    console.log("🚀 Initialisation Clario...");
 
     // 1. Charger local d'abord
     this.loadTasks();
@@ -65,17 +91,13 @@ class ClarioApp {
   }
 
   /**
-   * Sync au démarrage
+   * Sync au démarrage avec userId réel
    */
   async syncOnStartup() {
     try {
-      const userId = "demo-user";
-      const firebaseTasks = await SyncService.syncFromFirebase(userId);
-
-      // ✅ FORCER remplacement
+      const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
       this.tasks = firebaseTasks;
-      this.renderTasks(); // ⚠️ Render ICI
-
+      this.renderTasks();
       console.log("✅ Sync:", this.tasks.length, "tâches affichées");
     } catch (error) {
       console.error("❌ Sync erreur:", error);
@@ -138,6 +160,15 @@ class ClarioApp {
     this.themeBtn.addEventListener("click", () => {
       this.toggleTheme();
     });
+
+    // ✅ NOUVEAU : Bouton déconnexion
+    const logoutBtn = document.getElementById("logout-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+        await AuthService.logout();
+        window.location.reload();
+      });
+    }
 
     // Raccourcis clavier
     this.setupKeyboardShortcuts();
@@ -398,7 +429,7 @@ class ClarioApp {
   }
 
   /**
-   * Synchronise avec Firebase
+   * Synchronise avec Firebase (userId réel)
    */
   async syncWithFirebase() {
     if (!this.offlineService.isOnline) {
@@ -410,11 +441,8 @@ class ClarioApp {
     this.syncBtn.classList.add("syncing");
 
     try {
-      // TODO: Récupérer userId depuis auth
-      const userId = "demo-user";
-
-      await SyncService.syncToFirebase(userId);
-      await SyncService.syncFromFirebase(userId);
+      await SyncService.syncToFirebase(this.userId);
+      await SyncService.syncFromFirebase(this.userId);
 
       this.loadTasks();
       this.renderTasks();
@@ -528,14 +556,13 @@ class ClarioApp {
     const notification = document.createElement("div");
     notification.className = "update-notification";
     notification.innerHTML = `
-    <p>Une nouvelle version est disponible !</p>
-    <button id="update-btn" class="btn-primary">Mettre à jour</button>
-  `;
+      <p>Une nouvelle version est disponible !</p>
+      <button id="update-btn" class="btn-primary">Mettre à jour</button>
+    `;
 
     document.body.appendChild(notification);
 
     document.getElementById("update-btn").addEventListener("click", () => {
-      // Demander au SW de prendre le contrôle
       navigator.serviceWorker.controller.postMessage({ type: "SKIP_WAITING" });
       window.location.reload();
     });
