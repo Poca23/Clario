@@ -1,72 +1,214 @@
-const CACHE_NAME = 'clario-v1.0.3';
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './assets/css/styles.css',
-  './assets/css/components.css',
-  './assets/css/animations.css',
-  './assets/css/theme.css',
-  './assets/js/app.js',
-  './assets/js/modules/TaskManager.js',
-  './assets/js/modules/UIManager.js',
-  './assets/js/modules/theme.js',
-  './assets/js/utils/helpers.js',
-  './assets/js/keyboard.js',
-  './assets/images/logo_Clario_removebg-preview.png',
-  './assets/favicons/favicon-16x16.png',
-  './assets/favicons/favicon-32x32.png',
-  './assets/favicons/apple-touch-icon.png',
-  './assets/favicons/favicon.png'
+/**
+ * 🔧 SERVICE WORKER
+ *
+ * WHO: Gestion cache et fonctionnement offline
+ * WHAT: Cache des assets + stratégies réseau
+ * WHY: Performance + mode offline
+ * HOW: Cache API + Fetch interceptor
+ */
+
+const CACHE_NAME = "clario-v1.0.0";
+const STATIC_CACHE = "clario-static-v1";
+const DYNAMIC_CACHE = "clario-dynamic-v1";
+
+// Assets à mettre en cache immédiatement
+const STATIC_ASSETS = [
+  "/",
+  "/index.html",
+  "/src/styles/theme.css",
+  "/src/styles/components.css",
+  "/src/app.js",
+  "/src/config/firebase.js",
+  "/src/config/constants.js",
+  "/src/services/storage.service.js",
+  "/src/services/sync.service.js",
+  "/src/services/offline.service.js",
+  "/src/components/TaskCard.js",
+  "/src/components/TaskForm.js",
+  "/src/utils/date.utils.js",
+  "/src/utils/validation.utils.js",
+  "/public/icons/android-chrome-192x192.png",
+  "/public/icons/android-chrome-512x512.png",
 ];
 
-// Installation optimisée
-self.addEventListener('install', (event) => {
+// Limites du cache dynamique
+const DYNAMIC_CACHE_LIMIT = 50;
+
+/**
+ * Helper: Nettoyer le cache dynamique
+ * @param {string} cacheName - Nom du cache
+ * @param {number} maxItems - Nombre max d'items
+ */
+const limitCacheSize = async (cacheName, maxItems) => {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+
+  if (keys.length > maxItems) {
+    await cache.delete(keys[0]);
+    limitCacheSize(cacheName, maxItems);
+  }
+};
+
+// ==========================================
+// INSTALLATION
+// ==========================================
+self.addEventListener("install", (event) => {
+  console.log("[SW] Installation...");
+
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(STATIC_CACHE)
       .then((cache) => {
-        console.log('🔄 Mise en cache...');
-        return cache.addAll(urlsToCache);
+        console.log("[SW] Mise en cache des assets statiques");
+        return cache.addAll(STATIC_ASSETS);
       })
-      .then(() => {
-        console.log('✅ Cache OK');
-        self.skipWaiting();
-      })
-      .catch(error => {
-        console.error('❌ Erreur cache:', error);
-      })
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activation améliorée
-self.addEventListener('activate', (event) => {
+// ==========================================
+// ACTIVATION
+// ==========================================
+self.addEventListener("activate", (event) => {
+  console.log("[SW] Activation...");
+
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('✅ SW activé');
-      self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys
+            .filter((key) => key !== STATIC_CACHE && key !== DYNAMIC_CACHE)
+            .map((key) => {
+              console.log("[SW] Suppression ancien cache:", key);
+              return caches.delete(key);
+            })
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
-// Stratégie cache-first
-self.addEventListener('fetch', (event) => {
+// ==========================================
+// FETCH - STRATÉGIE NETWORK FIRST
+// ==========================================
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+
+  // Ignorer les requêtes non-GET
+  if (request.method !== "GET") return;
+
+  // Ignorer Firebase et API externes
+  if (
+    request.url.includes("firestore.googleapis.com") ||
+    request.url.includes("identitytoolkit.googleapis.com")
+  ) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        return response || fetch(event.request);
+    // Stratégie: Network First, fallback Cache
+    fetch(request)
+      .then(async (response) => {
+        // Cloner la réponse car elle ne peut être lue qu'une fois
+        const responseClone = response.clone();
+
+        // Mettre en cache la nouvelle réponse
+        const cache = await caches.open(DYNAMIC_CACHE);
+        await cache.put(request, responseClone);
+
+        // Limiter la taille du cache
+        limitCacheSize(DYNAMIC_CACHE, DYNAMIC_CACHE_LIMIT);
+
+        return response;
       })
-      .catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('./index.html');
+      .catch(async () => {
+        // En cas d'échec réseau, chercher dans le cache
+        const cachedResponse = await caches.match(request);
+
+        if (cachedResponse) {
+          console.log("[SW] Réponse depuis le cache:", request.url);
+          return cachedResponse;
         }
+
+        // Si pas en cache et URL HTML, retourner page offline
+        if (request.headers.get("accept").includes("text/html")) {
+          return caches.match("/");
+        }
+
+        // Sinon retourner erreur
+        return new Response("Ressource non disponible hors ligne", {
+          status: 503,
+          statusText: "Service Unavailable",
+        });
       })
   );
+});
+
+// ==========================================
+// MESSAGES (communication avec l'app)
+// ==========================================
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === "CLEAR_CACHE") {
+    event.waitUntil(
+      caches.keys().then((keys) => {
+        return Promise.all(keys.map((key) => caches.delete(key)));
+      })
+    );
+  }
+});
+
+// ==========================================
+// SYNC (Background Sync API)
+// ==========================================
+self.addEventListener("sync", (event) => {
+  console.log("[SW] Background sync:", event.tag);
+
+  if (event.tag === "sync-tasks") {
+    event.waitUntil(
+      // Notifier l'app pour synchroniser
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: "BACKGROUND_SYNC",
+            timestamp: Date.now(),
+          });
+        });
+      })
+    );
+  }
+});
+
+// ==========================================
+// NOTIFICATIONS PUSH (optionnel)
+// ==========================================
+self.addEventListener("push", (event) => {
+  const data = event.data ? event.data.json() : {};
+
+  const options = {
+    body: data.body || "Nouvelle notification Clario",
+    icon: "/icons/icon-192x192.png",
+    badge: "/icons/badge-72x72.png",
+    vibrate: [200, 100, 200],
+    data: {
+      url: data.url || "/",
+    },
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Clario", options)
+  );
+});
+
+// ==========================================
+// CLICK NOTIFICATION
+// ==========================================
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  event.waitUntil(self.clients.openWindow(event.notification.data.url));
 });

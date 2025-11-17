@@ -1,0 +1,96 @@
+/* ===========================
+   🎨 DESIGN SYSTEM V2
+   =========================== */
+
+:root {
+  /* 🎨 Couleurs principales */
+  --coral: #9a31c4;
+  --coral-light: #661bac;
+  --coral-dark: #7e35af;
+
+  /* 🌑 Tons neutres */
+  --gray-900: #1a1a1a;
+  --gray-800: #2d2d2d;
+  --gray-700: #404040;
+  --gray-100: #f5f5f5;
+  --white: #ffffff;
+
+  /* ✅ États */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #ef4444;
+
+  /* 📐 Espacements */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  /* 🔤 Typographie */
+  --font-family: "Inter", -apple-system, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  /* 🎭 Effets */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🌙 Dark mode */
+[data-theme="dark"] {
+  --bg-primary: var(--gray-900);
+  --bg-secondary: var(--gray-800);
+  --text-primary: var(--white);
+  --text-secondary: var(--gray-100);
+}
+
+/* ☀️ Light mode */
+[data-theme="light"] {
+  --bg-primary: var(--white);
+  --bg-secondary: var(--gray-100);
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-700);
+}
+
+/* ===========================
+   🎯 BASE STYLES
+   =========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  line-height: 1.6;
+  transition: var(--transition);
+}
+
+/* ===========================
+   📱 RESPONSIVE
+   =========================== */
+
+/* Mobile first */
+@media (min-width: 768px) {
+  .tasks-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tasks-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

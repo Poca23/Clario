@@ -1,0 +1,512 @@
+/**
+ * 🎨 COMPONENTS STYLESHEET
+ * 
+ * WHO: Styles des composants UI
+ * WHAT: Classes réutilisables pour cards, buttons, forms
+ * WHY: Cohérence visuelle + maintenabilité
+ * HOW: BEM naming + CSS custom properties
+ */
+
+/* ===========================
+   🎯 LAYOUT
+   =========================== */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--coral);
+  letter-spacing: -0.5px;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.app-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+/* ===========================
+   🔘 BUTTONS
+   =========================== */
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.icon-btn:hover {
+  background: var(--bg-primary);
+  transform: scale(1.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+.icon-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--text-primary);
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: none;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  z-index: 50;
+}
+
+.fab:hover {
+  background: var(--coral-dark);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.fab svg {
+  width: 32px;
+  height: 32px;
+  fill: white;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: var(--font-size-base);
+}
+
+.btn-primary {
+  background: var(--coral);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--coral-dark);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--gray-700);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+}
+
+/* ===========================
+   🔍 FILTER BAR
+   =========================== */
+
+.filter-bar {
+  margin-bottom: var(--space-lg);
+}
+
+#search-input {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--gray-700);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-md);
+  transition: var(--transition);
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.filter-chips {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-700);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: var(--font-size-sm);
+}
+
+.chip:hover {
+  background: var(--bg-secondary);
+}
+
+.chip.active {
+  background: var(--coral);
+  color: white;
+  border-color: var(--coral);
+}
+
+/* ===========================
+   📋 TASKS GRID
+   =========================== */
+
+.tasks-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+
+/* Responsive grid (défini dans theme.css) */
+
+.task-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Priorités */
+.task-card[data-priority="high"] {
+  border-left-color: var(--error);
+}
+
+.task-card[data-priority="medium"] {
+  border-left-color: var(--warning);
+}
+
+.task-card[data-priority="low"] {
+  border-left-color: var(--success);
+}
+
+.task-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: var(--space-sm);
+}
+
+.task-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.task-card__actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.task-card__btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.task-card__btn:hover {
+  background: var(--bg-primary);
+}
+
+.task-card__btn svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-secondary);
+}
+
+.task-card__description {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: var(--space-sm) 0;
+  line-height: 1.5;
+}
+
+.task-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--gray-700);
+}
+
+.task-card__date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.task-card__status {
+  padding: 4px var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.task-card__status--pending {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--warning);
+}
+
+.task-card__status--completed {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success);
+}
+
+/* État complété */
+.task-card[data-completed="true"] .task-card__title {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ===========================
+   📝 MODAL & FORM
+   =========================== */
+
+.modal {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.task-form {
+  padding: var(--space-lg);
+}
+
+.task-form h2 {
+  margin-bottom: var(--space-lg);
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--gray-700);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-md);
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+.task-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.task-form input:focus,
+.task-form textarea:focus,
+.task-form select:focus {
+  outline: none;
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+/* ===========================
+   🔄 SYNC INDICATOR
+   =========================== */
+
+.sync-indicator {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: var(--transition);
+}
+
+.sync-indicator.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sync-indicator__icon {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-indicator--success .sync-indicator__icon {
+  fill: var(--success);
+  animation: none;
+}
+
+.sync-indicator--error .sync-indicator__icon {
+  fill: var(--error);
+  animation: none;
+}
+
+/* ===========================
+   📱 RESPONSIVE ADJUSTMENTS
+   =========================== */
+
+@media (max-width: 767px) {
+  .app-main {
+    padding: var(--space-md);
+  }
+
+  .fab {
+    bottom: var(--space-md);
+    right: var(--space-md);
+  }
+
+  .sync-indicator {
+    bottom: var(--space-md);
+    left: var(--space-md);
+    right: var(--space-md);
+  }
+
+  .filter-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: var(--space-xs);
+  }
+}
+
+/* ===========================
+   ♿ ACCESSIBILITY
+   =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible pour navigation clavier */
+*:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/**
+ * 🔔 NOTIFICATION MISE À JOUR
+ */
+.update-notification {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+.update-notification p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
