@@ -15,6 +15,7 @@ import { OfflineService } from "./services/offline.service.js";
 import { TaskCard } from "./components/TaskCard.js";
 import { TaskForm } from "./components/TaskForm.js";
 import { FilterBar } from "./components/FilterBar.js";
+import { InstallButton } from "./components/InstallButton.js";
 
 class ClarioApp {
   constructor() {
@@ -57,12 +58,15 @@ class ClarioApp {
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
 
+    // 📥 Bouton installation PWA
+    this.installButton = new InstallButton();
+
     // Composants
     const modal = document.getElementById("task-modal");
     const form = document.getElementById("task-form");
     this.taskForm = new TaskForm(modal, form);
 
-    // ✅ NOUVEAU: FilterBar
+    // FilterBar
     this.filterBar = new FilterBar((filters) => {
       this.currentFilters = filters;
       this.renderTasks();

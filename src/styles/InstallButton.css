@@ -1,0 +1,201 @@
+/**
+ * 🎯 INSTALL BUTTON STYLES
+ * 
+ * WHO: Styles bouton installation PWA
+ * WHAT: Design subtil et élégant
+ * WHY: Inciter sans être intrusif
+ * HOW: Animations douces + positionnement intelligent
+ */
+
+/* ===========================
+   📥 BOUTON INSTALLATION
+   =========================== */
+
+.install-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-xs);
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+/* États */
+.install-btn.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.install-btn.hidden {
+  display: none;
+}
+
+/* Hover */
+.install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.install-btn:active {
+  transform: translateY(0);
+}
+
+/* Icône */
+.install-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Texte responsive */
+.install-btn__text {
+  white-space: nowrap;
+}
+
+/* Effet shimmer subtil */
+.install-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===========================
+   📱 RESPONSIVE
+   =========================== */
+
+/* Mobile: Icône seule */
+@media (max-width: 480px) {
+  .install-btn {
+    padding: var(--space-sm);
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .install-btn__text {
+    display: none;
+  }
+
+  .install-btn svg {
+    margin: 0;
+  }
+}
+
+/* Tablet et +: Texte visible */
+@media (min-width: 481px) {
+  .install-btn {
+    min-width: 120px;
+  }
+}
+
+/* Desktop: Version complète */
+@media (min-width: 768px) {
+  .install-btn:hover::after {
+    content: "Installer sur cet appareil";
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--gray-900);
+    color: white;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeIn 0.2s ease forwards;
+    animation-delay: 0.5s;
+    pointer-events: none;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   🌙 DARK MODE
+   =========================== */
+
+[data-theme="dark"] .install-btn {
+  box-shadow: 0 4px 12px rgba(154, 49, 196, 0.3);
+}
+
+[data-theme="dark"] .install-btn:hover {
+  box-shadow: 0 6px 16px rgba(154, 49, 196, 0.4);
+}
+
+/* ===========================
+   ♿ ACCESSIBILITY
+   =========================== */
+
+.install-btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .install-btn,
+  .install-btn::before {
+    animation: none !important;
+    transition: opacity 0.2s ease;
+  }
+}
+
+/* ===========================
+   🎯 MODE INSTALLÉ
+   =========================== */
+
+/* Cacher si déjà en standalone */
+@media (display-mode: standalone) {
+  .install-btn {
+    display: none !important;
+  }
+}
