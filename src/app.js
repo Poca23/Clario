@@ -444,10 +444,14 @@ class ClarioApp {
     this.syncBtn.classList.add("syncing");
 
     try {
+      // ✅ Sync vers Firebase d'abord
       await SyncService.syncToFirebase(this.userId);
-      await SyncService.syncFromFirebase(this.userId);
 
-      this.loadTasks();
+      // ✅ Puis récupérer + afficher
+      const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
+      StorageService.saveTasks(firebaseTasks);
+
+      this.tasks = firebaseTasks;
       this.renderTasks();
 
       this.showNotification("Synchronisé !", "success");
