@@ -185,7 +185,7 @@
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: var(--space-sm);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .progress-bar__fill {
@@ -201,8 +201,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 /* Stats text */
@@ -265,7 +270,7 @@
 .header-logo {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   margin-bottom: var(--space-md);
 }
 
@@ -273,7 +278,6 @@
   width: 100px;
   height: 100px;
   object-fit: contain;
-  border-radius: var(--radius);
   transition: var(--transition);
 }
 
@@ -288,11 +292,19 @@
   margin: 0;
 }
 
-/* Version mobile */
+/* MOBILE  */
 @media (max-width: 767px) {
+  .header-logo {
+    justify-content: left;
+  }
+
   .header-logo__image {
     width: 80px;
     height: 80px;
+  }
+
+  .header-logo__title {
+    display: none;
   }
 }
 
@@ -376,13 +388,13 @@ kbd {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   /* Bouton "Nouvelle tâche" reste en premier même en mobile */
   .filter-bar__row .btn-primary {
     order: -1;
     margin-bottom: var(--space-sm);
   }
-  
+
   .filter-bar__search,
   .filter-bar__select {
     width: 100%;
@@ -392,7 +404,7 @@ kbd {
     flex-direction: column;
     gap: var(--space-sm);
   }
-  
+
   .task-card__actions {
     align-self: flex-end;
   }
@@ -403,7 +415,7 @@ kbd {
   .keyboard-hints__toggle .keyboard-text {
     display: none;
   }
-  
+
   .keyboard-hints__toggle {
     padding: var(--space-sm);
   }
@@ -423,7 +435,7 @@ kbd {
   transition: transform 0.3s ease;
   z-index: 1001;
   font-size: var(--font-size-sm);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .offline-indicator--visible {
@@ -529,7 +541,7 @@ kbd {
     right: 20px;
     max-width: none;
   }
-  
+
   .install-btn {
     margin-left: 0;
     margin-top: var(--space-sm);
