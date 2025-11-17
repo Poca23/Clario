@@ -51,13 +51,23 @@ class ClarioApp {
     this.searchQuery = "";
     this.currentTheme = localStorage.getItem("theme") || "light";
 
+    // ✅ NOUVEAUX FILTRES
+    this.currentPriority = "all";
+    this.currentDateFilter = "all";
+    this.currentSort = "newest";
+
     // Éléments DOM
     this.tasksContainer = document.getElementById("tasks-container");
     this.searchInput = document.getElementById("search-input");
-    this.filterChips = document.querySelectorAll(".chip");
+    this.filterChips = document.querySelectorAll("[data-filter]");
     this.addTaskBtn = document.getElementById("add-task-btn");
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
+
+    // ✅ NOUVEAUX ÉLÉMENTS FILTRES
+    this.priorityChips = document.querySelectorAll("[data-priority]");
+    this.dateChips = document.querySelectorAll("[data-date]");
+    this.sortSelect = document.getElementById("sort-select");
 
     // Composants
     const modal = document.getElementById("task-modal");
@@ -135,12 +145,30 @@ class ClarioApp {
       this.renderTasks();
     });
 
-    // Filtres
+    // Filtres statut
     this.filterChips.forEach((chip) => {
       chip.addEventListener("click", (e) => {
         this.setFilter(e.target.dataset.filter);
       });
     });
+
+    // ✅ FILTRES PRIORITÉ
+    this.priorityChips.forEach((chip) => {
+      chip.addEventListener("click", () => this.handlePriorityFilter(chip));
+    });
+
+    // ✅ FILTRES DATE
+    this.dateChips.forEach((chip) => {
+      chip.addEventListener("click", () => this.handleDateFilter(chip));
+    });
+
+    // ✅ TRI
+    if (this.sortSelect) {
+      this.sortSelect.addEventListener("change", (e) => {
+        this.currentSort = e.target.value;
+        this.renderTasks();
+      });
+    }
 
     // Actions sur les cards (event delegation)
     this.tasksContainer.addEventListener("click", (e) => {
@@ -164,7 +192,7 @@ class ClarioApp {
       this.toggleTheme();
     });
 
-    // ✅ NOUVEAU : Bouton déconnexion
+    // Bouton déconnexion
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async () => {
@@ -369,17 +397,75 @@ class ClarioApp {
   }
 
   /**
-   * Filtre les tâches selon critères actifs
+   * ✅ 🎯 Filtre par priorité
+   */
+  handlePriorityFilter(chip) {
+    this.currentPriority = chip.dataset.priority;
+
+    this.priorityChips.forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+
+    this.renderTasks();
+  }
+
+  /**
+   * ✅ 📅 Filtre par date
+   */
+  handleDateFilter(chip) {
+    this.currentDateFilter = chip.dataset.date;
+
+    this.dateChips.forEach((c) => c.classList.remove("active"));
+    chip.classList.add("active");
+
+    this.renderTasks();
+  }
+
+  /**
+   * ✅ 🔍 Applique tous les filtres
    * @returns {Array} Tâches filtrées
    */
   getFilteredTasks() {
     let filtered = [...this.tasks];
 
-    // Filtre par statut
+    // Filtre statut
     if (this.currentFilter === "pending") {
       filtered = filtered.filter((t) => !t.completed);
     } else if (this.currentFilter === "completed") {
       filtered = filtered.filter((t) => t.completed);
+    }
+
+    // Filtre priorité
+    if (this.currentPriority !== "all") {
+      filtered = filtered.filter((t) => t.priority === this.currentPriority);
+    }
+
+    // Filtre date
+    if (this.currentDateFilter !== "all") {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      filtered = filtered.filter((task) => {
+        if (!task.dueDate) return false;
+        const dueDate = new Date(task.dueDate);
+
+        switch (this.currentDateFilter) {
+          case "today":
+            return dueDate.toDateString() === today.toDateString();
+          case "week":
+            const weekEnd = new Date(today);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            return dueDate >= today && dueDate <= weekEnd;
+          case "month":
+            return (
+              dueDate.getMonth() === today.getMonth() &&
+              dueDate.getFullYear() === today.getFullYear()
+            );
+          case "overdue":
+            return dueDate < today && !task.completed;
+          default:
+            return true;
+        }
+      });
     }
 
     // Filtre par recherche
@@ -392,43 +478,54 @@ class ClarioApp {
       );
     }
 
-    // Tri par date de création (plus récent en premier)
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    return filtered;
+    // Tri
+    return this.sortTasks(filtered);
   }
 
   /**
-   * Affiche les tâches dans le DOM
+   * ✅ 📊 Trie les tâches
+   */
+  sortTasks(tasks) {
+    const sorted = [...tasks];
+
+    switch (this.currentSort) {
+      case "oldest":
+        return sorted.sort((a, b) => a.createdAt - b.createdAt);
+      case "priority":
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        return sorted.sort(
+          (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+        );
+      case "dueDate":
+        return sorted.sort((a, b) => {
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        });
+      case "newest":
+      default:
+        return sorted.sort((a, b) => b.createdAt - a.createdAt);
+    }
+  }
+
+  /**
+   * ✅ Affiche les tâches dans le DOM
    */
   renderTasks() {
-    const filteredTasks = this.getFilteredTasks();
+    const filtered = this.getFilteredTasks(); // ✅ Utiliser méthode filtre
 
-    if (filteredTasks.length === 0) {
-      this.renderEmptyState();
+    if (filtered.length === 0) {
+      this.tasksContainer.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+          <p>📭 Aucune tâche trouvée</p>
+        </div>
+      `;
       return;
     }
 
-    const html = filteredTasks.map((task) => TaskCard.render(task)).join("");
-
-    this.tasksContainer.innerHTML = html;
-  }
-
-  /**
-   * Affiche un état vide
-   */
-  renderEmptyState() {
-    const message = this.searchQuery
-      ? "Aucune tâche trouvée"
-      : this.currentFilter === "completed"
-      ? "Aucune tâche terminée"
-      : "Aucune tâche en cours";
-
-    this.tasksContainer.innerHTML = `
-      <div class="empty-state">
-        <p>${message}</p>
-      </div>
-    `;
+    this.tasksContainer.innerHTML = filtered
+      .map((task) => TaskCard.render(task))
+      .join("");
   }
 
   /**
@@ -444,10 +541,8 @@ class ClarioApp {
     this.syncBtn.classList.add("syncing");
 
     try {
-      // ✅ Sync vers Firebase d'abord
       await SyncService.syncToFirebase(this.userId);
 
-      // ✅ Puis récupérer + afficher
       const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
       StorageService.saveTasks(firebaseTasks);
 

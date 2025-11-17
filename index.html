@@ -75,13 +75,49 @@
 
     <!-- 🎯 Main -->
     <main class="app-main">
-        <!-- Barre de filtres -->
+        <!-- 🔍 Barre de filtres et recherche -->
         <section class="filter-bar">
-            <input type="search" id="search-input" placeholder="Rechercher une tâche..." aria-label="Rechercher">
-            <div class="filter-chips" role="group" aria-label="Filtres de tâches">
-                <button data-filter="all" class="chip active">Toutes</button>
-                <button data-filter="pending" class="chip">En cours</button>
-                <button data-filter="completed" class="chip">Terminées</button>
+            <!-- Recherche -->
+            <input type="search" id="search-input" placeholder="🔍 Rechercher une tâche..." aria-label="Rechercher">
+
+            <!-- Filtres Statut -->
+            <div class="filter-group">
+                <div class="filter-chips" role="group" aria-label="Filtres statut">
+                    <button data-filter="all" class="chip active">Toutes</button>
+                    <button data-filter="pending" class="chip">⏳ En cours</button>
+                    <button data-filter="completed" class="chip">✔️ Terminées</button>
+                </div>
+            </div>
+
+            <!-- Filtres Priorité -->
+            <div class="filter-group">
+                <div class="filter-chips" role="group" aria-label="Filtres priorité">
+                    <button data-priority="all" class="chip active">Toutes</button>
+                    <button data-priority="high" class="chip">🔴 Haute</button>
+                    <button data-priority="medium" class="chip">🟡 Moyenne</button>
+                    <button data-priority="low" class="chip">🟢 Basse</button>
+                </div>
+            </div>
+
+            <!-- Filtres Date -->
+            <div class="filter-group">
+                <div class="filter-chips" role="group" aria-label="Filtres échéance">
+                    <button data-date="all" class="chip active">Toutes</button>
+                    <button data-date="today" class="chip">📅 Aujourd'hui</button>
+                    <button data-date="week" class="chip">📆 Cette semaine</button>
+                    <button data-date="month" class="chip">🗓️ Ce mois</button>
+                    <button data-date="overdue" class="chip">⚠️ En retard</button>
+                </div>
+            </div>
+
+            <!-- Tri -->
+            <div class="filter-group">
+                <select id="sort-select" class="sort-select" aria-label="Trier par">
+                    <option value="newest">📊 Plus récentes</option>
+                    <option value="oldest">📈 Plus anciennes</option>
+                    <option value="priority">🎯 Par priorité</option>
+                    <option value="dueDate">📅 Par échéance</option>
+                </select>
             </div>
         </section>
 

@@ -606,3 +606,58 @@
   border-color: #4b5563;
   color: white;
 }
+
+/* ===========================
+   📊 FILTER GROUPS
+   =========================== */
+
+.filter-group {
+  margin-bottom: var(--space-sm);
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Select pour tri */
+.sort-select {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--gray-700);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
+}
+
+.sort-select:hover {
+  border-color: var(--coral-light);
+}
+
+/* Mobile: scroll horizontal chips */
+@media (max-width: 767px) {
+  .filter-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: var(--space-xs);
+    -webkit-scrollbar-width: thin;
+    scrollbar-width: thin;
+  }
+
+  .filter-chips::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .filter-chips::-webkit-scrollbar-thumb {
+    background: var(--gray-700);
+    border-radius: 2px;
+  }
+}
