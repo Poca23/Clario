@@ -48,25 +48,38 @@ class ClarioApp {
   async init() {
     console.log("🚀 Initialisation Clario V2...");
 
-    // Charger les tâches
+    // 1. Charger local d'abord
     this.loadTasks();
 
-    // Appliquer le thème
+    // 2. Sync Firebase au démarrage
+    await this.syncOnStartup();
+
+    // 3. Reste du code...
     this.applyTheme();
-
-    // Lier les événements
     this.bindEvents();
-
-    // Gérer le réseau
     this.setupOfflineMode();
-
-    // Afficher les tâches
     this.renderTasks();
-
-    // Enregistrer le Service Worker
     await this.registerServiceWorker();
 
     console.log("✅ Application prête !");
+  }
+
+  /**
+   * Sync au démarrage
+   */
+  async syncOnStartup() {
+    try {
+      const userId = "demo-user";
+      const firebaseTasks = await SyncService.syncFromFirebase(userId);
+
+      // ✅ FORCER remplacement
+      this.tasks = firebaseTasks;
+      this.renderTasks(); // ⚠️ Render ICI
+
+      console.log("✅ Sync:", this.tasks.length, "tâches affichées");
+    } catch (error) {
+      console.error("❌ Sync erreur:", error);
+    }
   }
 
   /**

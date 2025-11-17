@@ -48,10 +48,7 @@ export class SyncService {
    */
   static async syncFromFirebase(userId) {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME),
-        where("userId", "==", userId)
-      );
+      const q = collection(db, COLLECTION_NAME);
 
       const snapshot = await getDocs(q);
       const firebaseTasks = snapshot.docs.map((doc) => ({
@@ -80,16 +77,12 @@ export class SyncService {
   static mergeTasks(localTasks, firebaseTasks) {
     const taskMap = new Map();
 
-    // Ajouter tâches locales
-    localTasks.forEach((task) => taskMap.set(task.id, task));
+    // 1. Ajouter Firebase d'abord (prioritaire)
+    firebaseTasks.forEach((task) => taskMap.set(task.id, task));
 
-    // Écraser avec Firebase (plus récent)
-    firebaseTasks.forEach((task) => {
-      const existing = taskMap.get(task.id);
-      if (
-        !existing ||
-        new Date(task.syncedAt) > new Date(existing.syncedAt || 0)
-      ) {
+    // 2. Ajouter local seulement si pas dans Firebase
+    localTasks.forEach((task) => {
+      if (!taskMap.has(task.id)) {
         taskMap.set(task.id, task);
       }
     });
