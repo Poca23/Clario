@@ -39,21 +39,6 @@
   width: auto;
 }
 
-/* Mobile */
-@media (max-width: 767px) {
-  .logo-text {
-    display: none;
-  }
-
-  .logo-img {
-    height: 90px;
-  }
-}
-
-.logo-img:hover {
-  animation: logoBounce 0.6s ease;
-}
-
 @keyframes logoBounce {
   0%,
   100% {
@@ -183,6 +168,9 @@
   display: grid;
   gap: var(--space-md);
   grid-template-columns: 1fr;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .task-card {
@@ -314,6 +302,11 @@
   width: 90%;
   background: var(--bg-primary);
   box-shadow: var(--shadow-md);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
 }
 
 .modal::backdrop {
@@ -363,7 +356,7 @@
 .form-actions {
   display: flex;
   gap: var(--space-sm);
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 /* ===========================
@@ -572,6 +565,18 @@
     left: var(--space-md);
     right: var(--space-md);
   }
+
+  .logo-text {
+    display: none;
+  }
+
+  .logo-img {
+    height: 90px;
+  }
+}
+
+.logo-img:hover {
+  animation: logoBounce 0.6s ease;
 }
 
 @media (max-width: 480px) {
