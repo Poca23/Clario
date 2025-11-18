@@ -1,0 +1,177 @@
+/**
+ * 📊 PROGRESS BAR COMPONENT
+ * 
+ * WHO: Composant jauge de progression
+ * WHAT: Barre visuelle pourcentage tâches complétées
+ * WHY: Feedback utilisateur + motivation
+ * HOW: CSS Grid + Custom Properties + Animations natives
+ */
+
+/* ===========================
+   🎨 VARIABLES
+   =========================== */
+.progress-wrapper {
+  --progress-height: 8px;
+  --progress-radius: 12px;
+  --progress-bg: rgba(255, 255, 255, 0.1);
+  --progress-fill: var(--coral, #ff6b6b);
+  --progress-transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===========================
+   📐 LAYOUT
+   =========================== */
+.progress-wrapper {
+  position: sticky;
+  top: 64px; /* Hauteur header */
+  z-index: 10;
+  background: var(--bg-secondary);
+  padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
+  border-bottom: 1px solid var(--gray-700, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm, 0.5rem);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.progress-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-percentage {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums; /* Chiffres alignés */
+}
+
+/* ===========================
+   🎨 BARRE
+   =========================== */
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: var(--progress-height);
+  background: var(--progress-bg);
+  border-radius: var(--progress-radius);
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%; /* Valeur initiale */
+  background: linear-gradient(
+    90deg,
+    var(--progress-fill),
+    var(--coral-light, #ff8787)
+  );
+  border-radius: var(--progress-radius);
+  transition: var(--progress-transition);
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+}
+
+/* ===========================
+   ✨ ANIMATIONS
+   =========================== */
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* ===========================
+   📱 RESPONSIVE
+   =========================== */
+
+/* Mobile */
+@media (max-width: 480px) {
+  .progress-wrapper {
+    padding: var(--space-sm, 0.75rem) var(--space-md, 1rem);
+    top: 56px; /* Header mobile plus petit */
+  }
+
+  .progress-info {
+    font-size: 0.75rem;
+  }
+
+  .progress-percentage {
+    font-size: 0.875rem;
+  }
+
+  .progress-wrapper {
+    --progress-height: 6px;
+  }
+}
+
+/* Tablet+ */
+@media (min-width: 768px) {
+  .progress-wrapper {
+    --progress-height: 10px;
+  }
+
+  .progress-info {
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .progress-wrapper {
+    border-radius: var(--radius, 8px);
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+}
+
+/* ===========================
+   🎯 ÉTATS
+   =========================== */
+
+/* 100% complété */
+.progress-fill[aria-valuenow="100"] {
+  background: linear-gradient(90deg, var(--success), var(--success-light));
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+/* Dark mode */
+[data-theme="dark"] .progress-wrapper {
+  --progress-bg: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+
+  .progress-fill::after {
+    animation: none;
+  }
+}

@@ -31,8 +31,9 @@
     <link rel="stylesheet" href="/src/styles/FilterBar.css">
     <link rel="stylesheet" href="/src/styles/InstallButton.css">
 
-    <!-- Counter -->
-    <link rel="stylesheet" href="/src/styles/task-counter.css">
+    <!-- ProgressBar -->
+    <link rel="stylesheet" href="/src/styles/ProgressBar.css">
+
 
     <!-- Description -->
     <meta name="description"
@@ -82,10 +83,17 @@
         </div>
     </header>
 
-    <!-- Counter -->
-    <section class="container">
-        <div id="task-counter-container"></div>
-    </section>
+    <!-- ProgressBar -->
+    <div id="progress-container" class="progress-wrapper">
+        <div class="progress-info">
+            <span class="progress-label">Progression</span>
+            <span class="progress-percentage" id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+            aria-label="Progression des tâches">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
 
     <!-- 🎯 Main -->
     <main class="app-main">

@@ -16,7 +16,7 @@ import { TaskCard } from "./components/TaskCard.js";
 import { TaskForm } from "./components/TaskForm.js";
 import { FilterBar } from "./components/FilterBar.js";
 import { InstallButton } from "./components/InstallButton.js";
-import { TaskCounter } from "./components/TaskCounter.js";
+import { ProgressBar } from "./components/ProgressBar.js";
 
 class ClarioApp {
   constructor() {
@@ -59,11 +59,11 @@ class ClarioApp {
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
 
-    // Counter
-    this.taskCounter = new TaskCounter("task-counter-container");
-
     // 📥 Bouton installation PWA
     this.installButton = new InstallButton();
+
+    // 📊 Initialiser ProgressBar
+    this.progressBar = new ProgressBar();
 
     // Composants
     const modal = document.getElementById("task-modal");
@@ -92,6 +92,9 @@ class ClarioApp {
     this.setupOfflineMode();
     this.renderTasks();
     await this.registerServiceWorker();
+
+    // ✅ Mettre à jour au démarrage
+    this.updateProgress();
 
     console.log("✅ Application prête !");
   }
@@ -421,20 +424,31 @@ class ClarioApp {
   renderTasks() {
     const filtered = this.getFilteredTasks();
 
-    this.taskCounter.update(filtered);
-
     if (filtered.length === 0) {
       this.tasksContainer.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
         <p>📭 Aucune tâche trouvée</p>
       </div>
     `;
+      // ✅ MAJ ProgressBar même si vide
+      this.updateProgress();
       return;
     }
 
     this.tasksContainer.innerHTML = filtered
       .map((task) => TaskCard.render(task))
       .join("");
+
+    // ✅ MAJ ProgressBar après render
+    this.updateProgress();
+  }
+
+  /**
+   * 📊 Met à jour la jauge de progression
+   */
+  updateProgress() {
+    const percentage = this.progressBar.calculateProgress(this.tasks);
+    this.progressBar.update(percentage);
   }
 
   /**
@@ -454,7 +468,7 @@ class ClarioApp {
       const firebaseTasks = await SyncService.syncFromFirebase(this.userId);
       StorageService.saveTasks(firebaseTasks);
       this.tasks = firebaseTasks;
-      this.renderTasks();
+      this.renderTasks(); // ✅ Appelle updateProgress() automatiquement
       this.showNotification("Synchronisé !", "success");
     } catch (error) {
       console.error("❌ Erreur sync:", error);
