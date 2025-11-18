@@ -16,6 +16,7 @@ import { TaskCard } from "./components/TaskCard.js";
 import { TaskForm } from "./components/TaskForm.js";
 import { FilterBar } from "./components/FilterBar.js";
 import { InstallButton } from "./components/InstallButton.js";
+import { TaskCounter } from "./components/TaskCounter.js";
 
 class ClarioApp {
   constructor() {
@@ -57,6 +58,9 @@ class ClarioApp {
     this.addTaskBtn = document.getElementById("add-task-btn");
     this.syncBtn = document.getElementById("sync-btn");
     this.themeBtn = document.getElementById("theme-btn");
+
+    // Counter
+    this.taskCounter = new TaskCounter("task-counter-container");
 
     // 📥 Bouton installation PWA
     this.installButton = new InstallButton();
@@ -417,12 +421,14 @@ class ClarioApp {
   renderTasks() {
     const filtered = this.getFilteredTasks();
 
+    this.taskCounter.update(filtered);
+
     if (filtered.length === 0) {
       this.tasksContainer.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
-          <p>📭 Aucune tâche trouvée</p>
-        </div>
-      `;
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+        <p>📭 Aucune tâche trouvée</p>
+      </div>
+    `;
       return;
     }
 

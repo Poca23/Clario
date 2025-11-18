@@ -1,0 +1,134 @@
+/**
+ * 📊 TASK COUNTER STYLES
+ * Approche: CSS Variables + Flexbox + SVG
+ */
+
+.task-counter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== JAUGE SVG ===== */
+.counter__gauge {
+  width: 120px;
+  height: 120px;
+  transform: rotate(-90deg); /* Départ en haut */
+}
+
+.gauge__bg {
+  fill: none;
+  stroke: var(--gray-700);
+  stroke-width: 8;
+}
+
+.gauge__progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 251.2; /* 2πr = 2 * 3.14 * 40 */
+  stroke-dashoffset: 251.2;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation dynamique via JS */
+.gauge__progress[style*="--progress"] {
+  stroke-dashoffset: calc(251.2 - (251.2 * var(--progress) / 100));
+}
+
+/* ===== TEXTE CENTRAL ===== */
+.counter__label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.counter__number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.counter__total {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.counter__text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== STATS DÉTAILLÉES ===== */
+.counter__details {
+  display: flex;
+  gap: var(--space-xl);
+  width: 100%;
+  justify-content: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat__label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .task-counter {
+    padding: var(--space-md);
+  }
+
+  .counter__gauge {
+    width: 100px;
+    height: 100px;
+  }
+
+  .counter__number {
+    font-size: 1.5rem;
+  }
+
+  .counter__details {
+    gap: var(--space-md);
+  }
+
+  .stat__value {
+    font-size: 1.25rem;
+  }
+}
+
+/* ===== DARK MODE ===== */
+[data-theme="dark"] .task-counter {
+  background: var(--gray-800);
+}
+
+[data-theme="dark"] .gauge__bg {
+  stroke: var(--gray-600);
+}
