@@ -22,14 +22,16 @@
    📐 LAYOUT
    =========================== */
 .progress-wrapper {
-  position: sticky;
-  top: 64px; /* Hauteur header */
-  z-index: 10;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  right: 0;
+  z-index: 90;
   background: var(--bg-secondary);
   padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
   border-bottom: 1px solid var(--gray-700, rgba(255, 255, 255, 0.1));
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .progress-info {
@@ -113,7 +115,7 @@
 @media (max-width: 480px) {
   .progress-wrapper {
     padding: var(--space-sm, 0.75rem) var(--space-md, 1rem);
-    top: 56px; /* Header mobile plus petit */
+    top: 100px;
   }
 
   .progress-info {
@@ -145,7 +147,6 @@
   .progress-wrapper {
     border-radius: var(--radius, 8px);
     margin: 0 auto;
-    max-width: 1200px;
   }
 }
 

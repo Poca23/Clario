@@ -12,18 +12,27 @@
    =========================== */
 
 .filter-bar {
-  margin-bottom: var(--space-lg);
+  position: fixed;
+  top: 200px;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  background: var(--bg-secondary);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--gray-700);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 #search-input {
   width: 100%;
-  padding: var(--space-md);
+  padding: var(--space-xs);
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-md);
   background: var(--bg-secondary);
   color: var(--text-primary);
   font-size: var(--font-size-base);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-xs);
   transition: var(--transition);
 }
 
@@ -100,9 +109,9 @@
    =========================== */
 
 .filter-menu {
-  position: fixed; /* ⚠️ FIXED pour calcul viewport */
+  position: fixed;
   min-width: 160px;
-  max-width: 90vw; /* ✅ Limite largeur mobile */
+  max-width: 90vw;
   background: var(--bg-secondary);
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-md);
@@ -159,6 +168,9 @@
    =========================== */
 
 @media (max-width: 480px) {
+  .filter-bar {
+    top: 170px;
+  }
   /* Texte masqué */
   .filter-text {
     display: none;
@@ -167,8 +179,8 @@
   /* Boutons carrés */
   .filter-btn {
     padding: var(--space-sm);
-    min-width: 44px;
-    aspect-ratio: 1;
+    min-width: 30px;
+    aspect-ratio: 2;
   }
 
   /* Icônes plus grandes */
@@ -179,7 +191,7 @@
   /* Menu centré, largeur contrôlée */
   .filter-menu {
     min-width: 200px;
-    max-width: calc(100vw - 2rem); /* ✅ Marge sécurité */
+    max-width: calc(100vw - 2rem);
   }
 }
 
@@ -188,12 +200,16 @@
    =========================== */
 
 @media (min-width: 481px) {
+  .filter-bar {
+    top: 190px;
+  }
+
   .filter-compact {
     gap: var(--space-sm);
   }
 
   .filter-btn {
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) var(--space-xs);
   }
 
   /* Menu largeur auto, max viewport */
