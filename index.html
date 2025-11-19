@@ -108,11 +108,12 @@
     <!-- 🎯 Main -->
     <main class="app-main">
         <!-- 🔍 Barre de filtres compacte -->
+        <!-- 🔍 Barre de filtres optimisée -->
         <section class="filter-bar">
             <!-- Recherche -->
-            <input type="search" id="search-input" placeholder="🔍 Rechercher..." aria-label="Rechercher">
+            <input type="search" id="search-input" placeholder="🔍 Rechercher une tâche..." aria-label="Rechercher">
 
-            <!-- Filtres compacts -->
+            <!-- Grille de filtres -->
             <div class="filter-compact">
                 <!-- Statut -->
                 <div class="filter-dropdown">
@@ -121,24 +122,40 @@
                         <span class="filter-text">Statut</span>
                     </button>
                     <div class="filter-menu" id="status-menu">
-                        <button data-filter="all" class="filter-item active">✅ Toutes</button>
-                        <button data-filter="pending" class="filter-item">⏳ En cours</button>
-                        <button data-filter="completed" class="filter-item">✔️ Terminées</button>
+                        <button data-filter="all" class="filter-item active">
+                            ✅ Toutes
+                        </button>
+                        <button data-filter="pending" class="filter-item">
+                            ⏳ En cours
+                        </button>
+                        <button data-filter="completed" class="filter-item">
+                            ✔️ Terminées
+                        </button>
                     </div>
                 </div>
 
-                <!-- Période -->
+                <!-- Date -->
                 <div class="filter-dropdown">
-                    <button class="filter-btn" id="date-btn" aria-label="Filtrer par période">
+                    <button class="filter-btn" id="date-btn" aria-label="Filtrer par date">
                         <span class="filter-icon">📅</span>
                         <span class="filter-text">Date</span>
                     </button>
                     <div class="filter-menu" id="date-menu">
-                        <button data-date="all" class="filter-item active">📆 Toutes</button>
-                        <button data-date="today" class="filter-item">📅 Aujourd'hui</button>
-                        <button data-date="week" class="filter-item">📆 Semaine</button>
-                        <button data-date="month" class="filter-item">🗓️ Mois</button>
-                        <button data-date="overdue" class="filter-item">⚠️ Retard</button>
+                        <button data-date="all" class="filter-item active">
+                            📆 Toutes
+                        </button>
+                        <button data-date="today" class="filter-item">
+                            📅 Aujourd'hui
+                        </button>
+                        <button data-date="week" class="filter-item">
+                            📆 Cette semaine
+                        </button>
+                        <button data-date="month" class="filter-item">
+                            🗓️ Ce mois
+                        </button>
+                        <button data-date="overdue" class="filter-item">
+                            ⚠️ En retard
+                        </button>
                     </div>
                 </div>
 
@@ -146,13 +163,21 @@
                 <div class="filter-dropdown">
                     <button class="filter-btn" id="priority-btn" aria-label="Filtrer par priorité">
                         <span class="filter-icon">🎯</span>
-                        <span class="filter-text">Prior</span>
+                        <span class="filter-text">Priorité</span>
                     </button>
                     <div class="filter-menu" id="priority-menu">
-                        <button data-priority="all" class="filter-item active">⭐ Toutes</button>
-                        <button data-priority="high" class="filter-item">🔴 Haute</button>
-                        <button data-priority="medium" class="filter-item">🟡 Moyenne</button>
-                        <button data-priority="low" class="filter-item">🟢 Basse</button>
+                        <button data-priority="all" class="filter-item active">
+                            ⭐ Toutes
+                        </button>
+                        <button data-priority="high" class="filter-item">
+                            🔴 Haute
+                        </button>
+                        <button data-priority="medium" class="filter-item">
+                            🟡 Moyenne
+                        </button>
+                        <button data-priority="low" class="filter-item">
+                            🟢 Basse
+                        </button>
                     </div>
                 </div>
 
@@ -163,15 +188,22 @@
                         <span class="filter-text">Tri</span>
                     </button>
                     <div class="filter-menu" id="sort-menu">
-                        <button data-sort="newest" class="filter-item active">🆕 Récent</button>
-                        <button data-sort="oldest" class="filter-item">📅 Ancien</button>
-                        <button data-sort="priority" class="filter-item">🎯 Priorité</button>
-                        <button data-sort="dueDate" class="filter-item">⏰ Échéance</button>
+                        <button data-sort="newest" class="filter-item active">
+                            🆕 Plus récent
+                        </button>
+                        <button data-sort="oldest" class="filter-item">
+                            📅 Plus ancien
+                        </button>
+                        <button data-sort="priority" class="filter-item">
+                            🎯 Par priorité
+                        </button>
+                        <button data-sort="dueDate" class="filter-item">
+                            ⏰ Par échéance
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
-
 
         <!-- Liste des tâches -->
         <section id="tasks-container" class="tasks-grid" role="list" aria-label="Liste des tâches">

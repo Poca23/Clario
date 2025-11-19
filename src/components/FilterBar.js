@@ -1,17 +1,11 @@
 /**
  * 🎯 FILTER BAR COMPONENT
- *
- * WHO: Barre de filtres responsive avec dropdowns
- * WHAT: Gestion filtres statut/date/priorité/tri
- * WHY: Séparation logique filtrage de l'app principale
- * HOW: Event delegation + positionnement intelligent
  */
 
 export class FilterBar {
   constructor(onFilterChange) {
-    this.onFilterChange = onFilterChange; // Callback vers app.js
+    this.onFilterChange = onFilterChange;
 
-    // État des filtres
     this.filters = {
       status: "all",
       date: "all",
@@ -19,178 +13,186 @@ export class FilterBar {
       sort: "newest",
     };
 
-    // Éléments DOM
-    this.dropdowns = {
-      status: {
-        btn: document.getElementById("status-btn"),
-        menu: document.getElementById("status-menu"),
-        items: document.querySelectorAll("#status-menu .filter-item"),
-      },
-      date: {
-        btn: document.getElementById("date-btn"),
-        menu: document.getElementById("date-menu"),
-        items: document.querySelectorAll("#date-menu .filter-item"),
-      },
-      priority: {
-        btn: document.getElementById("priority-btn"),
-        menu: document.getElementById("priority-menu"),
-        items: document.querySelectorAll("#priority-menu .filter-item"),
-      },
-      sort: {
-        btn: document.getElementById("sort-btn"),
-        menu: document.getElementById("sort-menu"),
-        items: document.querySelectorAll("#sort-menu .filter-item"),
-      },
-    };
+    this.config = ["status", "date", "priority", "sort"];
+    this.dropdowns = {};
+    this.activeMenu = null;
 
     this.init();
   }
 
-  /**
-   * 🚀 Initialisation
-   */
   init() {
+    this.cacheElements();
     this.bindEvents();
-    console.log("✅ FilterBar initialisée");
   }
 
-  /**
-   * 🔗 Lie les événements
-   */
+  cacheElements() {
+    this.config.forEach((key) => {
+      const btn = document.getElementById(`${key}-btn`);
+      const menu = document.getElementById(`${key}-menu`);
+
+      if (menu && menu.parentElement !== document.body) {
+        document.body.appendChild(menu);
+      }
+
+      this.dropdowns[key] = {
+        btn,
+        menu,
+        items: document.querySelectorAll(`#${key}-menu .filter-item`),
+      };
+    });
+  }
+
   bindEvents() {
-    // Toggle dropdowns
-    Object.entries(this.dropdowns).forEach(([key, dropdown]) => {
-      dropdown.btn.addEventListener("click", (e) => {
+    this.config.forEach((key) => {
+      const { btn, items } = this.dropdowns[key];
+
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.toggleDropdown(key);
+        this.toggle(key);
       });
 
-      // Sélection items
-      dropdown.items.forEach((item) => {
+      items.forEach((item) => {
         item.addEventListener("click", (e) => {
           e.stopPropagation();
-          this.handleSelect(key, item);
+          this.select(key, item);
         });
       });
     });
 
-    // Fermer au clic extérieur
-    document.addEventListener("click", () => this.closeAll());
+    document.addEventListener("click", (e) => {
+      if (this.activeMenu) {
+        const clickedMenu = e.target.closest(".filter-menu");
+        const clickedBtn = e.target.closest(".filter-btn");
 
-    // Repositionner au resize
-    window.addEventListener("resize", () => {
-      Object.entries(this.dropdowns).forEach(([key, dropdown]) => {
-        if (dropdown.menu.classList.contains("active")) {
-          this.position(dropdown.btn, dropdown.menu);
+        if (!clickedMenu && !clickedBtn) {
+          this.closeAll();
         }
-      });
+      }
+    });
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (this.activeMenu) {
+          this.position(
+            this.dropdowns[this.activeMenu].btn,
+            this.dropdowns[this.activeMenu].menu
+          );
+        }
+      }, 100);
     });
   }
 
-  /**
-   * 🎯 Toggle un dropdown
-   */
-  toggleDropdown(key) {
-    const dropdown = this.dropdowns[key];
-    const isActive = dropdown.menu.classList.contains("active");
-
-    this.closeAll();
-
-    if (!isActive) {
-      dropdown.menu.classList.add("active");
-      dropdown.btn.classList.add("active");
-      this.position(dropdown.btn, dropdown.menu);
+  toggle(key) {
+    if (this.activeMenu === key) {
+      this.close(key);
+      this.activeMenu = null;
+      return;
     }
+
+    if (this.activeMenu) {
+      this.close(this.activeMenu);
+    }
+
+    this.open(key);
+    this.activeMenu = key;
   }
 
-  /**
-   * 📍 Positionne intelligemment le menu SANS DÉBORDEMENT
-   */
-  position(button, menu) {
-    const PADDING = 16; // Marge sécurité viewport
+  open(key) {
+    const { btn, menu } = this.dropdowns[key];
+
+    btn.classList.add("active");
+    menu.classList.add("active");
+    menu.style.display = "flex";
+
+    this.position(btn, menu);
+  }
+
+  close(key) {
+    const { btn, menu } = this.dropdowns[key];
+
+    btn.classList.remove("active");
+    menu.classList.remove("active");
+    menu.style.display = "none";
+  }
+
+  closeAll() {
+    if (!this.activeMenu) return;
+
+    this.config.forEach((key) => {
+      this.close(key);
+    });
+
+    this.activeMenu = null;
+  }
+
+  position(btn, menu) {
+    const PAD = 16;
     const isMobile = window.innerWidth <= 480;
 
-    // Reset
-    menu.style.top = "";
-    menu.style.bottom = "";
-    menu.style.left = "";
-    menu.style.right = "";
-    menu.style.transform = "";
+    Object.assign(menu.style, {
+      top: "",
+      bottom: "",
+      left: "",
+      right: "",
+      transform: "",
+      visibility: "hidden",
+    });
 
-    const btnRect = button.getBoundingClientRect();
+    menu.offsetHeight;
+
+    const btnRect = btn.getBoundingClientRect();
     const menuRect = menu.getBoundingClientRect();
-    const viewport = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // ===== VERTICAL =====
-    const spaceBelow = viewport.height - btnRect.bottom - PADDING;
-    const spaceAbove = btnRect.top - PADDING;
+    const spaceBelow = vh - btnRect.bottom - PAD;
+    const spaceAbove = btnRect.top - PAD;
+    const menuHeight = menuRect.height;
 
-    if (spaceBelow >= menuRect.height || spaceBelow > spaceAbove) {
+    if (spaceBelow >= menuHeight) {
       menu.style.top = `${btnRect.bottom + 4}px`;
+    } else if (spaceAbove >= menuHeight) {
+      menu.style.top = `${btnRect.top - menuHeight - 4}px`;
     } else {
-      menu.style.bottom = `${viewport.height - btnRect.top + 4}px`;
+      menu.style.top = `${btnRect.bottom + 4}px`;
+      menu.style.maxHeight = `${spaceBelow - PAD}px`;
+      menu.style.overflowY = "auto";
     }
 
-    // ===== HORIZONTAL =====
     if (isMobile) {
-      // Mobile: centré avec contrainte
-      const centeredLeft =
-        btnRect.left + btnRect.width / 2 - menuRect.width / 2;
-      const maxLeft = viewport.width - menuRect.width - PADDING;
-      const finalLeft = Math.max(PADDING, Math.min(centeredLeft, maxLeft));
-
-      menu.style.left = `${finalLeft}px`;
+      const center = btnRect.left + btnRect.width / 2 - menuRect.width / 2;
+      const left = Math.max(PAD, Math.min(center, vw - menuRect.width - PAD));
+      menu.style.left = `${left}px`;
     } else {
-      // Desktop: aligné bouton avec contrainte
-      const spaceRight = viewport.width - btnRect.left - PADDING;
-
+      const spaceRight = vw - btnRect.left - PAD;
       if (spaceRight >= menuRect.width) {
         menu.style.left = `${btnRect.left}px`;
       } else {
-        menu.style.right = `${viewport.width - btnRect.right}px`;
+        menu.style.right = `${vw - btnRect.right}px`;
       }
     }
+
+    menu.style.visibility = "visible";
   }
 
-  /**
-   * ✅ Gère la sélection d'un item
-   */
-  handleSelect(type, item) {
-    const dropdown = this.dropdowns[type];
+  select(type, item) {
+    const { items } = this.dropdowns[type];
 
-    // Mise à jour UI
-    dropdown.items.forEach((i) => i.classList.remove("active"));
+    items.forEach((i) => i.classList.remove("active"));
     item.classList.add("active");
 
-    // Mise à jour état
     const value =
       item.dataset[type] || item.dataset.filter || item.dataset.sort;
     this.filters[type] = value;
 
-    // Fermer menu
-    dropdown.menu.classList.remove("active");
-    dropdown.btn.classList.remove("active");
+    this.close(type);
+    this.activeMenu = null;
 
-    // Notifier parent
     this.onFilterChange(this.filters);
   }
 
-  /**
-   * 🚪 Ferme tous les dropdowns
-   */
-  closeAll() {
-    Object.values(this.dropdowns).forEach((dropdown) => {
-      dropdown.menu.classList.remove("active");
-      dropdown.btn.classList.remove("active");
-    });
-  }
-
-  /**
-   * 📊 Récupère les filtres actuels
-   */
   getFilters() {
     return { ...this.filters };
   }
