@@ -58,7 +58,7 @@
 
 .header-actions {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--space-xxs);
 }
 
 .app-main {
