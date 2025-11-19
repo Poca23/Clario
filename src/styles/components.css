@@ -352,42 +352,6 @@
 }
 
 /* ===========================
-   🔔 NOTIFICATIONS
-   =========================== */
-
-.update-notification {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg-card);
-  padding: var(--space-sm);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  z-index: 1000;
-  animation: slideUp 0.3s ease;
-}
-
-.update-notification p {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(2rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* ===========================
    🔐 LOGIN
    =========================== */
 

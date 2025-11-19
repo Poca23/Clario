@@ -12,6 +12,9 @@ import { TaskForm } from "./components/TaskForm.js";
 import { FilterBar } from "./components/FilterBar.js";
 import { InstallButton } from "./components/InstallButton.js";
 import { ProgressBar } from "./components/ProgressBar.js";
+import toast from "./components/Toast.js";
+
+window.toast = toast;
 
 class ClarioApp {
   constructor() {
@@ -82,7 +85,7 @@ class ClarioApp {
       this.tasks = StorageService.getTasks();
     } catch (error) {
       console.error("❌ Erreur chargement:", error);
-      this.showNotification("Erreur de chargement", "error");
+      toast.error("Erreur de chargement des tâches");
     }
   }
 
@@ -148,10 +151,10 @@ class ClarioApp {
   setupOfflineMode() {
     this.offlineService.addListener((status, isOnline) => {
       if (isOnline) {
-        this.showNotification("Connexion rétablie", "success");
+        toast.success("✅ Connexion rétablie");
         this.syncWithFirebase();
       } else {
-        this.showNotification("Mode hors ligne", "warning");
+        toast.warning("📡 Mode hors ligne activé");
       }
       this.updateSyncButton(isOnline);
     });
@@ -183,14 +186,14 @@ class ClarioApp {
 
       this.tasks.push(newTask);
       this.renderTasks();
-      this.showNotification("Tâche créée !", "success");
+      toast.success("✅ Tâche créée avec succès !");
 
       if (this.offlineService.isOnline) {
         this.syncWithFirebase();
       }
     } catch (error) {
       console.error("❌ Erreur création:", error);
-      this.showNotification("Erreur de création", "error");
+      toast.error("❌ Impossible de créer la tâche");
     }
   }
 
@@ -204,14 +207,14 @@ class ClarioApp {
       }
 
       this.renderTasks();
-      this.showNotification("Tâche modifiée !", "success");
+      toast.success("✏️ Tâche modifiée !");
 
       if (this.offlineService.isOnline) {
         this.syncWithFirebase();
       }
     } catch (error) {
       console.error("❌ Erreur MAJ:", error);
-      this.showNotification("Erreur de modification", "error");
+      toast.error("❌ Erreur de modification");
     }
   }
 
@@ -222,14 +225,14 @@ class ClarioApp {
       StorageService.deleteTask(taskId);
       this.tasks = this.tasks.filter((t) => t.id !== taskId);
       this.renderTasks();
-      this.showNotification("Tâche supprimée", "success");
+      toast.success("🗑️ Tâche supprimée");
 
       if (this.offlineService.isOnline) {
         SyncService.deleteFromFirebase(taskId);
       }
     } catch (error) {
       console.error("❌ Erreur suppression:", error);
-      this.showNotification("Erreur de suppression", "error");
+      toast.error("❌ Impossible de supprimer");
     }
   }
 
@@ -241,6 +244,13 @@ class ClarioApp {
       this.updateTask(taskId, {
         completed: !task.completed,
       });
+
+      // Toast différent selon l'état
+      if (!task.completed) {
+        toast.success("🎉 Tâche terminée !", 2000);
+      } else {
+        toast.info("🔄 Tâche réactivée", 2000);
+      }
     } catch (error) {
       console.error("❌ Erreur toggle:", error);
     }
@@ -366,11 +376,11 @@ class ClarioApp {
 
   async syncWithFirebase() {
     if (!this.offlineService.isOnline) {
-      this.showNotification("Hors ligne", "warning");
+      toast.warning("📡 Synchronisation impossible : hors ligne");
       return;
     }
 
-    this.showNotification("Synchronisation...", "info");
+    toast.info("🔄 Synchronisation en cours...", 0);
     this.syncBtn.classList.add("syncing");
 
     try {
@@ -379,10 +389,14 @@ class ClarioApp {
       StorageService.saveTasks(firebaseTasks);
       this.tasks = firebaseTasks;
       this.renderTasks();
-      this.showNotification("Synchronisé !", "success");
+
+      // Ferme le toast de chargement et affiche succès
+      toast.clearAll();
+      toast.success("✅ Synchronisation réussie !");
     } catch (error) {
       console.error("❌ Erreur sync:", error);
-      this.showNotification("Erreur de synchronisation", "error");
+      toast.clearAll();
+      toast.error("❌ Échec de la synchronisation");
     } finally {
       this.syncBtn.classList.remove("syncing");
     }
@@ -397,6 +411,11 @@ class ClarioApp {
     this.currentTheme = this.currentTheme === "light" ? "dark" : "light";
     this.applyTheme();
     localStorage.setItem("theme", this.currentTheme);
+
+    // Toast avec émoji selon le thème
+    const themeEmoji = this.currentTheme === "dark" ? "🌙" : "☀️";
+    const themeName = this.currentTheme === "dark" ? "sombre" : "clair";
+    toast.info(`${themeEmoji} Thème ${themeName} activé`, 2000);
   }
 
   applyTheme() {
@@ -404,10 +423,6 @@ class ClarioApp {
     const icon = this.themeBtn.querySelector("svg");
     icon.innerHTML =
       this.currentTheme === "dark" ? this.getSunIcon() : this.getMoonIcon();
-  }
-
-  showNotification(message, type = "info") {
-    console.log(`[${type.toUpperCase()}] ${message}`);
   }
 
   getMoonIcon() {
@@ -450,19 +465,28 @@ class ClarioApp {
   }
 
   showUpdateNotification() {
-    const notification = document.createElement("div");
-    notification.className = "update-notification";
-    notification.innerHTML = `
-      <p>Nouvelle version disponible !</p>
-      <button id="update-btn" class="btn-primary">Mettre à jour</button>
-    `;
+    // Toast persistant avec action
+    toast.info(
+      "🎉 Nouvelle version disponible ! Cliquez ici pour mettre à jour.",
+      0
+    );
 
-    document.body.appendChild(notification);
-
-    document.getElementById("update-btn").addEventListener("click", () => {
-      navigator.serviceWorker.controller.postMessage({ type: "SKIP_WAITING" });
-      window.location.reload();
-    });
+    // Écouter le clic sur le toast pour recharger
+    document.addEventListener(
+      "click",
+      (e) => {
+        if (e.target.closest(".toast")) {
+          navigator.serviceWorker.controller.postMessage({
+            type: "SKIP_WAITING",
+          });
+          toast.info("🔄 Mise à jour en cours...", 1000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      },
+      { once: true }
+    );
   }
 }
 

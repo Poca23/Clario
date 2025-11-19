@@ -8,6 +8,7 @@
  */
 
 import { ValidationUtils } from "../utils/validation.utils.js";
+import toast from "./Toast.js";
 
 export class TaskForm {
   constructor(modalElement, formElement) {
@@ -157,7 +158,6 @@ export class TaskForm {
    * @param {string} message - Message d'erreur
    */
   showError(message) {
-    // TODO: Implémenter toast notification
-    alert(message);
+    toast.error(message, 4000);
   }
 }

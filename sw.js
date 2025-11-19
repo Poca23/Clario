@@ -25,6 +25,7 @@ const STATIC_ASSETS = [
   "/src/services/offline.service.js",
   "/src/components/TaskCard.js",
   "/src/components/TaskForm.js",
+  "/src/components/Toast.js",
   "/src/utils/date.utils.js",
   "/src/utils/validation.utils.js",
   "/public/icons/android-chrome-192x192.png",
