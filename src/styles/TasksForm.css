@@ -107,13 +107,25 @@
   line-height: 1.5;
 }
 
+/* ===========================
+   🎯 SELECT PRIORITÉ - FIX FINAL
+   =========================== */
+
 .task-form select {
   cursor: pointer;
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
+  background-size: 12px 12px;
+  background-position: right 1rem center;
   padding-right: 2.5rem;
+}
+
+/* Supprimer flèche native IE/Edge */
+.task-form select::-ms-expand {
+  display: none;
 }
 
 /* ===========================
@@ -122,11 +134,18 @@
 
 /* Focus standard */
 .task-form input:focus,
-.task-form textarea:focus,
+.task-form textarea:focus {
+  outline: none;
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
+}
+
+/* Focus select SANS animation */
 .task-form select:focus {
   outline: none;
   border-color: var(--coral);
   box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
+  animation: none;
 }
 
 /* Hover */
@@ -244,24 +263,30 @@
 [data-theme="dark"] .task-form input,
 [data-theme="dark"] .task-form textarea,
 [data-theme="dark"] .task-form select {
-  background: var(--bg-primary);
   border-color: var(--gray-700);
   color: var(--white);
 }
 
 [data-theme="dark"] .task-form input:focus,
-[data-theme="dark"] .task-form textarea:focus,
+[data-theme="dark"] .task-form textarea:focus {
+  border-color: var(--coral-light);
+  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.2);
+}
+
 [data-theme="dark"] .task-form select:focus {
   border-color: var(--coral-light);
   box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.2);
+  animation: none;
 }
 
 [data-theme="dark"] .form-group label {
   color: var(--gray-100);
 }
 
+/* Flèche select en blanc pour dark mode */
 [data-theme="dark"] .task-form select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-size: 12px 12px;
 }
 
 /* ===========================
@@ -322,7 +347,7 @@
   animation: modalFadeIn 0.2s ease;
 }
 
-/* Focus ring animation */
+/* Animation focusPulse UNIQUEMENT pour input/textarea */
 @keyframes focusPulse {
   0%,
   100% {
@@ -334,41 +359,13 @@
 }
 
 .task-form input:focus,
-.task-form textarea:focus,
-.task-form select:focus {
+.task-form textarea:focus {
   animation: focusPulse 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .task-form input:focus,
-  .task-form textarea:focus,
-  .task-form select:focus {
+  .task-form textarea:focus {
     animation: none;
   }
-}
-
-/* ===========================
-   🎨 FIX SELECT PRIORITÉ
-   =========================== */
-
-/* Masquer le pattern zigzag du select natif */
-.task-form select {
-  background-size: 12px;
-  background-position: right 1rem center;
-}
-
-/* Supprimer l'apparence native problématique */
-.task-form select::-ms-expand {
-  display: none;
-}
-
-/* Focus sans animation pour le select */
-.task-form select:focus {
-  animation: none;
-  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
-}
-
-/* Dark mode - Fix flèche select */
-[data-theme="dark"] .task-form select {
-  background-size: 12px;
 }
