@@ -38,7 +38,7 @@ export class Toast {
   // 🔄 GESTION QUEUE
   // ==========================================
 
-  show(message, type = "info", duration = 4000) {
+  show(message, type = "info", duration = 4500) {
     const toast = {
       id: `toast-${Date.now()}`,
       message,
