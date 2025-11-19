@@ -113,9 +113,9 @@
 
 .task-form select {
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
   -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: 12px 12px;
@@ -123,7 +123,6 @@
   padding-right: 2.5rem;
 }
 
-/* Supprimer flèche native IE/Edge */
 .task-form select::-ms-expand {
   display: none;
 }
@@ -220,7 +219,6 @@
    =========================== */
 
 @media (max-width: 480px) {
-  /* Stack date+heure sur mobile */
   .form-group--inline {
     grid-template-columns: 1fr;
   }
@@ -283,7 +281,6 @@
   color: var(--gray-100);
 }
 
-/* Flèche select en blanc pour dark mode */
 [data-theme="dark"] .task-form select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-size: 12px 12px;
@@ -305,7 +302,6 @@
   }
 }
 
-/* Focus visible amélioré */
 .task-form input:focus-visible,
 .task-form textarea:focus-visible,
 .task-form select:focus-visible {
