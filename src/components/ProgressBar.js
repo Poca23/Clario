@@ -27,28 +27,38 @@ export class ProgressBar {
   /**
    * 📊 Calcule le pourcentage de progression
    * @param {Array} tasks - Liste des tâches
-   * @returns {number} Pourcentage (0-100)
+   * @returns {Object} { percentage, completed, total }
    */
   calculateProgress(tasks) {
-    if (!tasks || tasks.length === 0) return 0;
+    if (!tasks || tasks.length === 0)
+      return { percentage: 0, completed: 0, total: 0 };
 
     const completed = tasks.filter((task) => task.completed).length;
     const total = tasks.length;
+    const percentage = Math.round((completed / total) * 100);
 
-    return Math.round((completed / total) * 100);
+    return { percentage, completed, total };
   }
 
   /**
    * 🔄 Met à jour l'affichage
    * @param {number} percentage - Pourcentage (0-100)
+   * @param {number} completed - Nombre de tâches complétées
+   * @param {number} total - Nombre total de tâches
    */
-  update(percentage) {
+  update(percentage, completed = 0, total = 0) {
     // Validation
     const safePercentage = Math.max(0, Math.min(100, percentage));
 
     // MAJ visuel
     this.fillElement.style.width = `${safePercentage}%`;
     this.textElement.textContent = `${safePercentage}%`;
+
+    // MAJ compteur
+    const countElement = document.getElementById("task-count");
+    if (countElement) {
+      countElement.textContent = `(${completed}/${total})`;
+    }
 
     // MAJ ARIA
     this.barElement.setAttribute("aria-valuenow", safePercentage);

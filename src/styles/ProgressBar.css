@@ -49,6 +49,12 @@
   letter-spacing: 0.5px;
 }
 
+.progress-count {
+  color: var(--text-secondary);
+  opacity: 0.7;
+  font-weight: 400;
+}
+
 .progress-percentage {
   color: var(--text-primary);
   font-weight: 700;

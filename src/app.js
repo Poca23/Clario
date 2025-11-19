@@ -445,10 +445,13 @@ class ClarioApp {
 
   /**
    * 📊 Met à jour la jauge de progression
+   * ⚠️ MODIFICATION ICI : Utilise la nouvelle structure avec completed/total
    */
   updateProgress() {
-    const percentage = this.progressBar.calculateProgress(this.tasks);
-    this.progressBar.update(percentage);
+    const { percentage, completed, total } = this.progressBar.calculateProgress(
+      this.tasks
+    );
+    this.progressBar.update(percentage, completed, total);
   }
 
   /**
