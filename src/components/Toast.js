@@ -17,11 +17,11 @@ export class Toast {
     this.init();
   }
 
-  /**
-   * ✅ Initialise le container de toasts
-   */
+  // ==========================================
+  // 🎯 INITIALISATION
+  // ==========================================
+
   init() {
-    // Évite double initialisation
     if (document.getElementById("toast-container")) return;
 
     this.container = document.createElement("div");
@@ -34,12 +34,10 @@ export class Toast {
     document.body.appendChild(this.container);
   }
 
-  /**
-   * ✅ Affiche un toast
-   * @param {string} message - Texte du toast
-   * @param {string} type - Type: success|error|warning|info
-   * @param {number} duration - Durée en ms (0 = manuel)
-   */
+  // ==========================================
+  // 🔄 GESTION QUEUE
+  // ==========================================
+
   show(message, type = "info", duration = 4000) {
     const toast = {
       id: `toast-${Date.now()}`,
@@ -52,9 +50,6 @@ export class Toast {
     this.processQueue();
   }
 
-  /**
-   * ✅ Traite la file d'attente
-   */
   async processQueue() {
     if (this.isProcessing || this.queue.length === 0) return;
 
@@ -64,33 +59,30 @@ export class Toast {
     await this.displayToast(toast);
     this.isProcessing = false;
 
-    // Traite le suivant
     if (this.queue.length > 0) {
       setTimeout(() => this.processQueue(), 300);
     }
   }
 
-  /**
-   * ✅ Affiche un toast individuel
-   */
+  // ==========================================
+  // 🎨 AFFICHAGE
+  // ==========================================
+
   displayToast({ id, message, type, duration }) {
     return new Promise((resolve) => {
       const toast = this.createToastElement(id, message, type);
       this.container.appendChild(toast);
 
-      // Animation entrée
       requestAnimationFrame(() => {
         toast.classList.add("toast--visible");
       });
 
-      // Auto-dismiss
       if (duration > 0) {
         setTimeout(() => {
           this.removeToast(id, resolve);
         }, duration);
       }
 
-      // Dismiss manuel
       const closeBtn = toast.querySelector(".toast__close");
       closeBtn.addEventListener("click", () => {
         this.removeToast(id, resolve);
@@ -98,9 +90,6 @@ export class Toast {
     });
   }
 
-  /**
-   * ✅ Crée l'élément HTML du toast
-   */
   createToastElement(id, message, type) {
     const toast = document.createElement("div");
     toast.id = id;
@@ -120,9 +109,6 @@ export class Toast {
     return toast;
   }
 
-  /**
-   * ✅ Supprime un toast
-   */
   removeToast(id, callback) {
     const toast = document.getElementById(id);
     if (!toast) return callback();
@@ -136,9 +122,10 @@ export class Toast {
     }, 300);
   }
 
-  /**
-   * ✅ Retourne l'icône selon le type
-   */
+  // ==========================================
+  // 🛠️ HELPERS
+  // ==========================================
+
   getIcon(type) {
     const icons = {
       success: `<svg viewBox="0 0 24 24" fill="currentColor">
@@ -158,18 +145,16 @@ export class Toast {
     return icons[type] || icons.info;
   }
 
-  /**
-   * ✅ Échappe les caractères HTML (sécurité XSS)
-   */
   escapeHtml(text) {
     const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
 
-  /**
-   * ✅ Raccourcis pour types courants
-   */
+  // ==========================================
+  // 🚀 API PUBLIQUE
+  // ==========================================
+
   success(message, duration) {
     this.show(message, "success", duration);
   }
@@ -186,9 +171,6 @@ export class Toast {
     this.show(message, "info", duration);
   }
 
-  /**
-   * ✅ Nettoie tous les toasts
-   */
   clearAll() {
     this.queue = [];
     if (this.container) {
@@ -197,6 +179,5 @@ export class Toast {
   }
 }
 
-// Instance singleton
 const toast = new Toast();
 export default toast;

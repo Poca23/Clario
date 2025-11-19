@@ -179,7 +179,7 @@
 
 @media (max-width: 480px) {
   .filter-bar {
-    top: 170px;
+    top: 177px;
     padding: var(--space-xs);
   }
 
