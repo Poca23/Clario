@@ -257,16 +257,6 @@
         </form>
     </dialog>
 
-    <!-- Script pour date minimum -->
-    <script>
-        // Définir la date minimum à aujourd'hui
-        document.addEventListener('DOMContentLoaded', () => {
-            const dateInput = document.getElementById('task-dueDate');
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.setAttribute('min', today);
-        });
-    </script>
-
     <!-- Scripts (type="module" pour ES6 imports) -->
     <script type="module" src="/src/app.js"></script>
 </body>

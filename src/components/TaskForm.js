@@ -17,7 +17,12 @@ export class TaskForm {
     this.onSubmitCallback = null;
 
     this.bindEvents();
+    this.setMinDate(); // ✅ Définir date minimum au démarrage
   }
+
+  /* ===========================
+     🎯 EVENTS
+     =========================== */
 
   /**
    * Lie les événements du formulaire
@@ -47,6 +52,22 @@ export class TaskForm {
       }
     });
   }
+
+  /**
+   * ✅ Définit la date minimum (aujourd'hui)
+   */
+  setMinDate() {
+    const dateInput = this.form.querySelector('[name="dueDate"]');
+    if (dateInput) {
+      const today = new Date().toISOString().split("T")[0];
+      dateInput.setAttribute("min", today);
+      console.log("✅ Date minimum définie:", today);
+    }
+  }
+
+  /* ===========================
+     🎨 UI METHODS
+     =========================== */
 
   /**
    * Ouvre le formulaire (création)
@@ -95,6 +116,10 @@ export class TaskForm {
     this.currentTaskId = null;
   }
 
+  /* ===========================
+     📝 FORM HANDLING
+     =========================== */
+
   /**
    * Gère la soumission du formulaire
    */
@@ -122,6 +147,10 @@ export class TaskForm {
 
     this.close();
   }
+
+  /* ===========================
+     ⚠️ ERROR HANDLING
+     =========================== */
 
   /**
    * Affiche une erreur de validation
