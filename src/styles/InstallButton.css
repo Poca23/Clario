@@ -113,8 +113,8 @@
 @media (max-width: 480px) {
   .install-btn {
     padding: var(--space-sm);
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     justify-content: center;
   }
 

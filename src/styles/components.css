@@ -100,7 +100,7 @@
   fill: var(--text-primary);
 }
 
-/* Floating Action Button - Version Header */
+/* Action Button - Header */
 .fab {
   position: static;
 
@@ -562,8 +562,8 @@
   }
 
   .fab {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
 
   .fab svg {
