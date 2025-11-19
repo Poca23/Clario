@@ -57,8 +57,16 @@
             <img src="/public/logo_Clario_removebg-preview.png" alt="Logo Clario" class="logo-img">
             <span class="logo-text">Clario</span>
         </h1>
-        <div class="header-actions">
 
+        <!-- Floating Action Button -->
+        <button id="add-task-btn" class="fab" aria-label="Ajouter une tâche">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+        </button>
+
+
+        <div class="header-actions">
             <!-- Bouton Synchronisation -->
             <button id="sync-btn" class="icon-btn" aria-label="Synchroniser">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -168,12 +176,6 @@
             <!-- Cards générées dynamiquement par TaskCard.js -->
         </section>
 
-        <!-- Floating Action Button -->
-        <button id="add-task-btn" class="fab" aria-label="Ajouter une tâche">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-        </button>
     </main>
 
     <!-- Modal Formulaire -->

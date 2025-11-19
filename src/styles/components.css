@@ -23,6 +23,7 @@
   right: 0;
   top: 0;
   z-index: 100;
+  gap: var(--space-xxs);
 }
 
 .logo {
@@ -64,7 +65,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-xs);
-  padding-top: 380px;
+  padding-top: 360px;
 }
 
 /* ===========================
@@ -99,34 +100,39 @@
   fill: var(--text-primary);
 }
 
-/* Floating Action Button */
+/* Floating Action Button - Version Header */
 .fab {
-  position: fixed;
-  bottom: var(--space-lg);
-  right: var(--space-lg);
-  bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  position: static;
+
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
   background: var(--coral);
   border: none;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   transition: var(--transition);
-  z-index: 50;
+  z-index: auto;
 }
 
 .fab:hover {
   background: var(--coral-dark);
   transform: scale(1.1) rotate(90deg);
+  box-shadow: var(--shadow-md);
+}
+
+.fab:active {
+  transform: scale(0.95);
 }
 
 .fab svg {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   fill: white;
 }
 
@@ -552,12 +558,17 @@
 @media (max-width: 767px) {
   .app-main {
     padding: var(--space-xs);
-    padding-top: 380px;
+    padding-top: 350px;
   }
 
   .fab {
-    bottom: var(--space-md);
-    right: var(--space-md);
+    width: 40px;
+    height: 40px;
+  }
+
+  .fab svg {
+    width: 20px;
+    height: 20px;
   }
 
   .sync-indicator {
@@ -582,7 +593,7 @@
 @media (max-width: 480px) {
   .app-main {
     padding: var(--space-xs);
-    padding-top: 340px;
+    padding-top: 320px;
   }
 
   /* ===========================

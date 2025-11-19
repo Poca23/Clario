@@ -24,6 +24,7 @@
   --border: #e5e7eb;
 
   /* Spacing */
+  --space-xxs: 0.1rem;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
