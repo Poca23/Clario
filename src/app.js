@@ -49,7 +49,6 @@ class ClarioApp {
     this.taskForm = new TaskForm(modal, form);
 
     this.filterBar = new FilterBar((filters) => {
-      this.currentFilters = filters;
       this.renderTasks();
     });
 

@@ -2,7 +2,7 @@
  * 🎨 COMPONENTS STYLESHEET
  * 
  * WHO: Styles des composants UI
- * WHAT: Classes réutilisables pour cards, buttons, forms
+ * WHAT: Classes réutilisables pour cards, buttons, layouts
  * WHY: Cohérence visuelle + maintenabilité
  * HOW: BEM naming + CSS custom properties
  */
@@ -103,7 +103,6 @@
 /* Action Button - Header */
 .fab {
   position: static;
-
   width: 44px;
   height: 44px;
   border-radius: var(--radius-sm);
@@ -111,11 +110,9 @@
   border: none;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   transition: var(--transition);
   z-index: auto;
 }
@@ -164,6 +161,11 @@
 
 .btn-secondary:hover {
   background: var(--bg-secondary);
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 1rem;
 }
 
 /* ===========================
@@ -249,6 +251,9 @@
 }
 
 .task-card__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
   margin: var(--space-sm) 0;
@@ -270,6 +275,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  white-space: nowrap;
 }
 
 .task-card__status {
@@ -281,88 +287,16 @@
 }
 
 .task-card__status--pending {
-  /* background: rgba(251, 191, 36, 0.1); */
   color: var(--warning);
 }
 
 .task-card__status--completed {
-  /* background: rgba(74, 222, 128, 0.2); */
   color: var(--success);
 }
 
-/* État complété */
 .task-card[data-completed="true"] .task-card__title {
   text-decoration: line-through;
   opacity: 0.6;
-}
-
-/* ===========================
-   📝 MODAL & FORM
-   =========================== */
-
-.modal {
-  border: none;
-  border-radius: var(--radius-lg);
-  padding: 0;
-  max-width: 500px;
-  width: 90%;
-  background: var(--bg-primary);
-  box-shadow: var(--shadow-md);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-}
-
-.modal::backdrop {
-  background: rgba(0, 0, 0, 0.7);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-
-.task-form {
-  padding: var(--space-xs);
-}
-
-.task-form h2 {
-  margin-bottom: var(--space-lg);
-  color: var(--text-primary);
-  font-size: var(--font-size-xl);
-}
-
-.task-form input,
-.task-form textarea,
-.task-form select {
-  width: 100%;
-  padding: var(--space-sm);
-  border: 1px solid var(--gray-700);
-  border-radius: var(--radius-sm);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: var(--font-size-base);
-  margin-bottom: var(--space-md);
-  font-family: var(--font-family);
-  transition: var(--transition);
-}
-
-.task-form textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.task-form input:focus,
-.task-form textarea:focus,
-.task-form select:focus {
-  outline: none;
-  border-color: var(--coral);
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
-}
-
-.form-actions {
-  display: flex;
-  gap: var(--space-sm);
-  justify-content: center;
 }
 
 /* ===========================
@@ -523,11 +457,6 @@
   border-color: #667eea;
 }
 
-.btn-block {
-  width: 100%;
-  margin-top: 1rem;
-}
-
 .login-error {
   color: #ef4444;
   font-size: 0.875rem;
@@ -595,21 +524,21 @@
     padding: var(--space-xs);
     padding-top: 320px;
   }
+}
 
-  /* ===========================
+/* ===========================
    ♿ ACCESSIBILITY
    =========================== */
 
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
+}
 
-  *:focus-visible {
-    outline: 2px solid var(--coral);
-    outline-offset: 2px;
-  }
+*:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
 }

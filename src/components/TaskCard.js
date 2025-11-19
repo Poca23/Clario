@@ -11,6 +11,32 @@ import { formatDate } from "../utils/date.utils.js";
 
 export class TaskCard {
   /**
+   * Tronque la description à 4 mots
+   * @param {string} text - Texte à tronquer
+   * @returns {string} Texte tronqué
+   */
+  static truncateDescription(text) {
+    if (!text) return "";
+
+    const words = text.split(" ");
+    if (words.length <= 4) return text;
+
+    return words.slice(0, 4).join(" ") + "...";
+  }
+
+  /**
+   * Formate date + heure
+   * @param {string} date - Date ISO
+   * @param {string} time - Heure (HH:MM)
+   * @returns {string} Date formatée
+   */
+  static formatDateTime(date, time) {
+    const dateStr = formatDate(date);
+    if (!time) return dateStr;
+
+    return `${dateStr} • ${time}`;
+  }
+  /**
    * Crée le HTML d'une task card
    * @param {Object} task - Données de la tâche
    * @returns {string} HTML de la card
@@ -23,11 +49,13 @@ export class TaskCard {
       priority = "medium",
       completed = false,
       dueDate,
+      dueTime,
       createdAt,
     } = task;
 
     const statusClass = completed ? "completed" : "pending";
     const statusText = completed ? "Terminée" : "En cours";
+    const truncatedDesc = this.truncateDescription(description);
 
     return `
       <article 
@@ -38,54 +66,40 @@ export class TaskCard {
         role="article"
         aria-label="Tâche: ${title}"
       >
-        <!-- Header -->
         <header class="task-card__header">
           <h3 class="task-card__title">${this.escapeHtml(title)}</h3>
           <div class="task-card__actions">
-            <button 
-              class="task-card__btn" 
-              data-action="toggle"
+            <button class="task-card__btn" data-action="toggle" 
               aria-label="${
                 completed
                   ? "Marquer comme non terminée"
                   : "Marquer comme terminée"
-              }"
-            >
+              }">
               ${this.getCheckIcon(completed)}
             </button>
-            <button 
-              class="task-card__btn" 
-              data-action="edit"
-              aria-label="Modifier la tâche"
-            >
+            <button class="task-card__btn" data-action="edit" aria-label="Modifier">
               ${this.getEditIcon()}
             </button>
-            <button 
-              class="task-card__btn" 
-              data-action="delete"
-              aria-label="Supprimer la tâche"
-            >
+            <button class="task-card__btn" data-action="delete" aria-label="Supprimer">
               ${this.getDeleteIcon()}
             </button>
           </div>
         </header>
 
-        <!-- Description -->
         ${
-          description
+          truncatedDesc
             ? `
-          <p class="task-card__description">
-            ${this.escapeHtml(description)}
-          </p>
+          <p class="task-card__description">${this.escapeHtml(
+            truncatedDesc
+          )}</p>
         `
             : ""
         }
 
-        <!-- Footer -->
         <footer class="task-card__footer">
           <span class="task-card__date">
             ${this.getCalendarIcon()}
-            ${dueDate ? formatDate(dueDate) : formatDate(createdAt)}
+            ${this.formatDateTime(dueDate || createdAt, dueTime)}
           </span>
           <span class="task-card__status task-card__status--${statusClass}">
             ${statusText}

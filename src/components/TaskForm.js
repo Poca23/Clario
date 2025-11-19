@@ -80,6 +80,7 @@ export class TaskForm {
       task.description || "";
     this.form.querySelector('[name="priority"]').value = task.priority;
     this.form.querySelector('[name="dueDate"]').value = task.dueDate || "";
+    this.form.querySelector('[name="dueTime"]').value = task.dueTime || "";
 
     this.form.querySelector("h2").textContent = "Modifier la tâche";
     this.modal.showModal();
@@ -104,6 +105,7 @@ export class TaskForm {
       description: formData.get("description").trim(),
       priority: formData.get("priority"),
       dueDate: formData.get("dueDate") || null,
+      dueTime: formData.get("dueTime") || null,
     };
 
     // Validation

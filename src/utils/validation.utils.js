@@ -42,6 +42,19 @@ export class ValidationUtils {
       }
     }
 
+    // ✅ NOUVEAU: Validation heure
+    if (taskData.dueTime) {
+      const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+      if (!timeRegex.test(taskData.dueTime)) {
+        errors.push("Format d'heure invalide (HH:MM)");
+      }
+    }
+
+    // ✅ NOUVEAU: Cohérence date + heure
+    if (taskData.dueTime && !taskData.dueDate) {
+      errors.push("Une heure nécessite une date");
+    }
+
     return {
       valid: errors.length === 0,
       errors,
@@ -55,10 +68,7 @@ export class ValidationUtils {
    */
   static sanitizeString(str) {
     if (typeof str !== "string") return "";
-    return str
-      .trim()
-      .replace(/[<>]/g, "") // Supprime < et >
-      .substring(0, 1000); // Limite longueur
+    return str.trim().replace(/[<>]/g, "").substring(0, 1000);
   }
 
   /**
