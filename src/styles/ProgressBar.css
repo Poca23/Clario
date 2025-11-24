@@ -91,17 +91,32 @@
 /* ===========================
    ✨ ANIMATIONS
    =========================== */
+
+/* Pulse doux sur barre principale */
+.progress-fill {
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.6;
+  }
+}
+
+/* Shimmer très lent */
 .progress-fill::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: shimmer 2s infinite;
+  background: linear-gradient(90deg, transparent, #ba8cccbe, transparent);
+  animation: shimmer 8s infinite;
 }
 
 @keyframes shimmer {
