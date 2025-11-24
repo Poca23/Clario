@@ -11,7 +11,6 @@ export class InstallButton {
   constructor() {
     this.deferredPrompt = null;
     this.button = null;
-
     this.init();
   }
 
@@ -27,7 +26,6 @@ export class InstallButton {
    * 🎨 Crée le bouton dans le DOM
    */
   createButton() {
-    // Créer élément
     this.button = document.createElement("button");
     this.button.id = "install-btn";
     this.button.className = "install-btn hidden";
@@ -39,7 +37,6 @@ export class InstallButton {
       <span class="install-btn__text">Installer</span>
     `;
 
-    // Injecter dans header
     const headerActions = document.querySelector(".header-actions");
     if (headerActions) {
       headerActions.insertBefore(this.button, headerActions.firstChild);
@@ -50,42 +47,35 @@ export class InstallButton {
    * 🔗 Lie les événements
    */
   bindEvents() {
+    // Écoute événement installation natif
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       this.deferredPrompt = e;
       this.show();
-      console.log("✅ Installation PWA disponible");
     });
 
-    // ✅ AJOUT: Forcer affichage en dev (localhost)
+    // Mode dev: affichage forcé (localhost uniquement)
     if (
       location.hostname === "localhost" ||
       location.hostname === "127.0.0.1"
     ) {
       setTimeout(() => {
-        if (!this.deferredPrompt) {
-          console.log(
-            "ℹ️ Mode DEV: bouton visible (pas installable réellement)"
-          );
-          this.show();
-        }
+        if (!this.deferredPrompt) this.show();
       }, 1000);
     }
 
-    // ✅ Clic sur bouton
+    // Déclenchement installation
     this.button.addEventListener("click", () => this.install());
 
-    // ✅ Détecter installation réussie
+    // Détection installation réussie
     window.addEventListener("appinstalled", () => {
       this.hide();
       this.deferredPrompt = null;
-      console.log("✅ PWA installée avec succès");
     });
 
-    // ✅ Cacher si déjà installé (standalone mode)
+    // Cache si déjà installé
     if (window.matchMedia("(display-mode: standalone)").matches) {
       this.hide();
-      console.log("ℹ️ App déjà installée");
     }
   }
 
@@ -94,24 +84,14 @@ export class InstallButton {
    */
   async install() {
     if (!this.deferredPrompt) {
-      console.warn("⚠️ Prompt installation non disponible");
+      console.warn("⚠️ Installation non disponible");
       return;
     }
 
     try {
-      // Afficher prompt natif
       this.deferredPrompt.prompt();
-
-      // Attendre choix utilisateur
       const { outcome } = await this.deferredPrompt.userChoice;
 
-      if (outcome === "accepted") {
-        console.log("✅ Utilisateur a accepté l'installation");
-      } else {
-        console.log("❌ Installation refusée");
-      }
-
-      // Reset
       this.deferredPrompt = null;
       this.hide();
     } catch (error) {
@@ -124,8 +104,6 @@ export class InstallButton {
    */
   show() {
     this.button.classList.remove("hidden");
-
-    // Animation d'apparition après 2s
     setTimeout(() => {
       this.button.classList.add("visible");
     }, 2000);
