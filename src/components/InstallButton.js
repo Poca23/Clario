@@ -21,7 +21,6 @@ export class InstallButton {
   init() {
     this.createButton();
     this.bindEvents();
-    console.log("✅ InstallButton initialisé");
   }
 
   /**

@@ -17,7 +17,6 @@ export class LoginForm {
   }
 
   render() {
-    // Créer conteneur login
     this.container = document.createElement("div");
     this.container.id = "login-container";
     this.container.className = "login-container";
@@ -25,7 +24,7 @@ export class LoginForm {
       <div class="login-card">
         <h1 class="login-title">🎯 Clario</h1>
         <p class="login-subtitle">Connectez-vous pour continuer</p>
-        
+
         <form id="login-form" class="login-form">
           <div class="form-group">
             <label for="email">Email</label>
@@ -58,13 +57,11 @@ export class LoginForm {
       </div>
     `;
 
-    // Masquer le contenu principal
     const mainContent = document.querySelector("main");
     if (mainContent) {
       mainContent.style.display = "none";
     }
 
-    // Ajouter au body
     document.body.prepend(this.container);
   }
 
@@ -78,13 +75,10 @@ export class LoginForm {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      // Reset erreur
       errorEl.textContent = "";
 
       try {
         await AuthService.login(email, password);
-
-        // ✅ MASQUER formulaire après succès
         this.hide();
       } catch (error) {
         errorEl.textContent = error.message;
@@ -92,15 +86,11 @@ export class LoginForm {
     });
   }
 
-  /**
-   * ✅ Masque le formulaire de login
-   */
   hide() {
     if (this.container) {
       this.container.remove();
     }
 
-    // Réafficher le contenu principal
     const mainContent = document.querySelector("main");
     if (mainContent) {
       mainContent.style.display = "block";
