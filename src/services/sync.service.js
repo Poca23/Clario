@@ -1,11 +1,6 @@
 /**
- * 🔄 SYNC SERVICE V2
+ * 🔄 SYNC SERVICE
  * Synchronisation automatique Firebase <-> LocalStorage
- *
- * WHO: Gestionnaire sync offline-first
- * WHAT: Sync auto + queue offline + détection connexion
- * WHY: Garantir cohérence données online/offline
- * HOW: Event listeners + flags sync + queue actions
  */
 
 import { db } from "../config/firebase.js";
@@ -26,50 +21,37 @@ export class SyncService {
   static syncInProgress = false;
 
   /**
-   * 🚀 Initialise les écouteurs
+   * Initialise les écouteurs de connexion
    */
   static init() {
-    console.log("🔄 Init SyncService, connexion:", this.isOnline);
-
-    // Détection connexion
     window.addEventListener("online", () => {
-      console.log("✅ CONNEXION RETROUVÉE");
       this.isOnline = true;
       this.processSyncQueue();
     });
 
     window.addEventListener("offline", () => {
-      console.log("📴 CONNEXION PERDUE");
       this.isOnline = false;
     });
 
-    // Sync initiale si online
     if (this.isOnline) {
       this.processSyncQueue();
     }
   }
 
   /**
-   * ➕ Ajoute une tâche (auto-sync)
+   * Ajoute une tâche avec sync automatique
    */
   static async addTask(task, userId) {
-    console.log("➕ Ajout tâche:", task.title);
-
-    // 1. Sauvegarde locale TOUJOURS
     const newTask = StorageService.addTask(task);
-    console.log("✅ Sauvegarde locale OK");
 
-    // 2. Sync Firebase si online
     if (this.isOnline) {
       try {
         await this.syncTaskToFirebase(newTask, userId);
-        console.log("✅ Sync Firebase immédiate OK");
       } catch (error) {
-        console.warn("⚠️ Échec sync immédiate, ajout à la queue");
+        console.error("❌ Échec sync immédiate:", error);
         this.addToQueue("add", newTask, userId);
       }
     } else {
-      console.log("📴 Offline: ajout à la queue");
       this.addToQueue("add", newTask, userId);
     }
 
@@ -77,12 +59,9 @@ export class SyncService {
   }
 
   /**
-   * ✏️ Modifie une tâche (auto-sync)
+   * Modifie une tâche avec sync automatique
    */
   static async updateTask(taskId, updates, userId) {
-    console.log("✏️ Modification tâche:", taskId);
-
-    // 1. Sauvegarde locale
     const tasks = StorageService.getTasks();
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
 
@@ -93,19 +72,15 @@ export class SyncService {
 
     tasks[taskIndex] = { ...tasks[taskIndex], ...updates };
     StorageService.saveTasks(tasks);
-    console.log("✅ Modification locale OK");
 
-    // 2. Sync Firebase
     if (this.isOnline) {
       try {
         await this.syncTaskToFirebase(tasks[taskIndex], userId);
-        console.log("✅ Sync Firebase immédiate OK");
       } catch (error) {
-        console.warn("⚠️ Échec sync, ajout à la queue");
+        console.error("❌ Échec sync modification:", error);
         this.addToQueue("update", tasks[taskIndex], userId);
       }
     } else {
-      console.log("📴 Offline: ajout à la queue");
       this.addToQueue("update", tasks[taskIndex], userId);
     }
 
@@ -113,34 +88,27 @@ export class SyncService {
   }
 
   /**
-   * 🗑️ Supprime une tâche (auto-sync)
+   * Supprime une tâche avec sync automatique
    */
   static async deleteTask(taskId, userId) {
-    console.log("🗑️ Suppression tâche:", taskId);
-
-    // 1. Suppression locale
     const tasks = StorageService.getTasks();
     const filtered = tasks.filter((t) => t.id !== taskId);
     StorageService.saveTasks(filtered);
-    console.log("✅ Suppression locale OK");
 
-    // 2. Sync Firebase
     if (this.isOnline) {
       try {
         await deleteDoc(doc(db, COLLECTION_NAME, taskId));
-        console.log("✅ Suppression Firebase OK");
       } catch (error) {
-        console.warn("⚠️ Échec suppression, ajout à la queue");
+        console.error("❌ Échec suppression Firebase:", error);
         this.addToQueue("delete", { id: taskId }, userId);
       }
     } else {
-      console.log("📴 Offline: ajout à la queue");
       this.addToQueue("delete", { id: taskId }, userId);
     }
   }
 
   /**
-   * 🔄 Sync une tâche vers Firebase
+   * Synchronise une tâche vers Firebase
    */
   static async syncTaskToFirebase(task, userId) {
     const taskRef = doc(db, COLLECTION_NAME, task.id);
@@ -152,17 +120,16 @@ export class SyncService {
   }
 
   /**
-   * 📝 Ajoute à la queue de sync
+   * Ajoute une action à la queue de synchronisation
    */
   static addToQueue(action, task, userId) {
     const queue = this.getQueue();
     queue.push({ action, task, userId, timestamp: Date.now() });
     localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
-    console.log("📝 Ajouté à queue:", action, task.id || task.title);
   }
 
   /**
-   * 📋 Récupère la queue
+   * Récupère la queue de synchronisation
    */
   static getQueue() {
     try {
@@ -174,30 +141,20 @@ export class SyncService {
   }
 
   /**
-   * ⚙️ Traite la queue de sync
+   * Traite la queue de synchronisation
    */
   static async processSyncQueue() {
-    if (this.syncInProgress || !this.isOnline) {
-      console.log("⏸️ Sync annulée (en cours ou offline)");
-      return;
-    }
+    if (this.syncInProgress || !this.isOnline) return;
 
     const queue = this.getQueue();
     if (queue.length === 0) {
-      console.log("✅ Queue vide, sync Firebase complète");
       return this.fullSync();
     }
 
-    console.log("🔄 Traitement queue:", queue.length, "actions");
     this.syncInProgress = true;
 
     try {
       for (const item of queue) {
-        console.log(
-          `🔄 Action: ${item.action}`,
-          item.task.id || item.task.title
-        );
-
         switch (item.action) {
           case "add":
           case "update":
@@ -209,11 +166,7 @@ export class SyncService {
         }
       }
 
-      // Vider la queue
       localStorage.removeItem(QUEUE_KEY);
-      console.log("✅ Queue traitée et vidée");
-
-      // Sync complète finale
       await this.fullSync();
     } catch (error) {
       console.error("❌ Erreur traitement queue:", error);
@@ -223,11 +176,9 @@ export class SyncService {
   }
 
   /**
-   * 🔄 Sync complète (Firebase écrase Local)
+   * Synchronisation complète (Firebase → Local)
    */
   static async fullSync() {
-    console.log("🔄 Sync complète Firebase → Local");
-
     try {
       const snapshot = await getDocs(collection(db, COLLECTION_NAME));
       const firebaseTasks = snapshot.docs.map((doc) => ({
@@ -235,14 +186,7 @@ export class SyncService {
         ...doc.data(),
       }));
 
-      // Écraser local avec Firebase (source de vérité)
       StorageService.saveTasks(firebaseTasks);
-      console.log(
-        "✅ Local écrasé par Firebase:",
-        firebaseTasks.length,
-        "tâches"
-      );
-
       return firebaseTasks;
     } catch (error) {
       console.error("❌ Erreur sync complète:", error);
@@ -251,30 +195,8 @@ export class SyncService {
   }
 
   /**
-   * 🧹 Nettoyage (appelé après sync)
+   * Supprime directement de Firebase
    */
-  static cleanup() {
-    localStorage.removeItem(QUEUE_KEY);
-    console.log("🧹 Queue nettoyée");
-  }
-
-  // ===== MÉTHODES LEGACY (compatibilité) =====
-
-  static async syncToFirebase(userId) {
-    console.log("⚠️ syncToFirebase() legacy appelée");
-    return this.processSyncQueue();
-  }
-
-  static async syncFromFirebase(userId) {
-    console.log("⚠️ syncFromFirebase() legacy appelée");
-    return this.fullSync();
-  }
-
-  static mergeTasks(localTasks, firebaseTasks) {
-    // Désormais inutile (Firebase écrase toujours)
-    return firebaseTasks;
-  }
-
   static async deleteFromFirebase(taskId) {
     return deleteDoc(doc(db, COLLECTION_NAME, taskId));
   }

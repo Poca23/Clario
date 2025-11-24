@@ -51,17 +51,13 @@ class ClarioApp {
     const form = document.getElementById("task-form");
     this.taskForm = new TaskForm(modal, form);
 
-    this.filterBar = new FilterBar((filters) => {
-      this.renderTasks();
-    });
+    this.filterBar = new FilterBar(() => this.renderTasks());
 
     await this.init();
   }
 
   async init() {
-    // ✅ MODIF: Init SyncService
     SyncService.init();
-
     this.loadTasks();
     await this.syncOnStartup();
     this.applyTheme();
@@ -74,12 +70,11 @@ class ClarioApp {
 
   async syncOnStartup() {
     try {
-      // ✅ MODIF: Utilise fullSync au lieu de syncFromFirebase
       const firebaseTasks = await SyncService.fullSync();
       this.tasks = firebaseTasks;
       this.renderTasks();
     } catch (error) {
-      console.error("❌ Sync erreur:", error);
+      console.error("❌ Erreur sync démarrage:", error);
     }
   }
 
@@ -93,9 +88,7 @@ class ClarioApp {
   }
 
   bindEvents() {
-    this.addTaskBtn.addEventListener("click", () => {
-      this.openCreateForm();
-    });
+    this.addTaskBtn.addEventListener("click", () => this.openCreateForm());
 
     this.searchInput.addEventListener("input", (e) => {
       this.searchQuery = e.target.value.toLowerCase();
@@ -113,14 +106,8 @@ class ClarioApp {
       this.handleTaskAction(taskId, action);
     });
 
-    // ✅ MODIF: Sync manuel déclenche processSyncQueue
-    this.syncBtn.addEventListener("click", () => {
-      this.manualSync();
-    });
-
-    this.themeBtn.addEventListener("click", () => {
-      this.toggleTheme();
-    });
+    this.syncBtn.addEventListener("click", () => this.manualSync());
+    this.themeBtn.addEventListener("click", () => this.toggleTheme());
 
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
@@ -156,7 +143,6 @@ class ClarioApp {
     this.offlineService.addListener((status, isOnline) => {
       if (isOnline) {
         toast.success("✅ Connexion rétablie");
-        // ✅ MODIF: processSyncQueue géré automatiquement par SyncService
       } else {
         toast.warning("📡 Mode hors ligne activé");
       }
@@ -167,21 +153,18 @@ class ClarioApp {
   }
 
   openCreateForm() {
-    this.taskForm.open((taskData) => {
-      this.createTask(taskData);
-    });
+    this.taskForm.open((taskData) => this.createTask(taskData));
   }
 
   openEditForm(taskId) {
     const task = this.tasks.find((t) => t.id === taskId);
     if (!task) return;
 
-    this.taskForm.openForEdit(task, (taskData, id) => {
-      this.updateTask(id, taskData);
-    });
+    this.taskForm.openForEdit(task, (taskData, id) =>
+      this.updateTask(id, taskData)
+    );
   }
 
-  // ✅ MODIF: Utilise SyncService.addTask
   async createTask(taskData) {
     try {
       const newTask = await SyncService.addTask(
@@ -198,7 +181,6 @@ class ClarioApp {
     }
   }
 
-  // ✅ MODIF: Utilise SyncService.updateTask
   async updateTask(taskId, updates) {
     try {
       const updatedTask = await SyncService.updateTask(
@@ -215,12 +197,11 @@ class ClarioApp {
       this.renderTasks();
       toast.success("✏️ Tâche modifiée !");
     } catch (error) {
-      console.error("❌ Erreur MAJ:", error);
+      console.error("❌ Erreur modification:", error);
       toast.error("❌ Erreur de modification");
     }
   }
 
-  // ✅ MODIF: Utilise SyncService.deleteTask
   async deleteTask(taskId) {
     if (!confirm("Supprimer cette tâche ?")) return;
 
@@ -236,21 +217,15 @@ class ClarioApp {
   }
 
   toggleTask(taskId) {
-    try {
-      const task = this.tasks.find((t) => t.id === taskId);
-      if (!task) return;
+    const task = this.tasks.find((t) => t.id === taskId);
+    if (!task) return;
 
-      this.updateTask(taskId, {
-        completed: !task.completed,
-      });
+    this.updateTask(taskId, { completed: !task.completed });
 
-      if (!task.completed) {
-        toast.success("🎉 Tâche terminée !", 2000);
-      } else {
-        toast.info("🔄 Tâche réactivée", 2000);
-      }
-    } catch (error) {
-      console.error("❌ Erreur toggle:", error);
+    if (!task.completed) {
+      toast.success("🎉 Tâche terminée !", 2000);
+    } else {
+      toast.info("🔄 Tâche réactivée", 2000);
     }
   }
 
@@ -372,7 +347,6 @@ class ClarioApp {
     this.progressBar.update(percentage, completed, total);
   }
 
-  // ✅ MODIF: Sync manuel utilise processSyncQueue
   async manualSync() {
     if (!this.offlineService.isOnline) {
       toast.warning("📡 Synchronisation impossible : hors ligne");
@@ -390,7 +364,7 @@ class ClarioApp {
       toast.clearAll();
       toast.success("✅ Synchronisation réussie !");
     } catch (error) {
-      console.error("❌ Erreur sync:", error);
+      console.error("❌ Erreur sync manuelle:", error);
       toast.clearAll();
       toast.error("❌ Échec de la synchronisation");
     } finally {
@@ -473,9 +447,7 @@ class ClarioApp {
             type: "SKIP_WAITING",
           });
           toast.info("🔄 Mise à jour en cours...", 1000);
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          setTimeout(() => window.location.reload(), 1000);
         }
       },
       { once: true }
