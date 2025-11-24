@@ -58,8 +58,7 @@ class ClarioApp {
 
   async init() {
     SyncService.init();
-    this.loadTasks();
-    await this.syncOnStartup();
+    await this.syncOnStartup(); // ✅ Charge directement depuis Firebase
     this.applyTheme();
     this.bindEvents();
     this.setupOfflineMode();
@@ -72,18 +71,9 @@ class ClarioApp {
     try {
       const firebaseTasks = await SyncService.fullSync();
       this.tasks = firebaseTasks;
-      this.renderTasks();
     } catch (error) {
       console.error("❌ Erreur sync démarrage:", error);
-    }
-  }
-
-  loadTasks() {
-    try {
-      this.tasks = StorageService.getTasks();
-    } catch (error) {
-      console.error("❌ Erreur chargement:", error);
-      toast.error("Erreur de chargement des tâches");
+      this.tasks = StorageService.getTasks(); // ✅ Fallback sur cache local
     }
   }
 
