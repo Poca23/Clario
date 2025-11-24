@@ -96,6 +96,19 @@ class ClarioApp {
       this.handleTaskAction(taskId, action);
     });
 
+    this.tasksContainer.addEventListener("change", (e) => {
+      if (e.target.matches("[data-action='change-status']")) {
+        const card = e.target.closest(".task-card");
+        const taskId = card.dataset.taskId;
+        const newStatus = e.target.value;
+
+        this.updateTask(taskId, {
+          status: newStatus,
+          completed: newStatus === "done",
+        });
+      }
+    });
+
     this.syncBtn.addEventListener("click", () => this.manualSync());
     this.themeBtn.addEventListener("click", () => this.toggleTheme());
 
@@ -237,10 +250,11 @@ class ClarioApp {
     let filtered = [...this.tasks];
     const filters = this.filterBar.getFilters();
 
-    if (filters.status === "pending") {
-      filtered = filtered.filter((t) => !t.completed);
-    } else if (filters.status === "completed") {
-      filtered = filtered.filter((t) => t.completed);
+    if (filters.status !== "all") {
+      filtered = filtered.filter((t) => {
+        const taskStatus = t.status || (t.completed ? "done" : "todo");
+        return taskStatus === filters.status;
+      });
     }
 
     if (filters.priority !== "all") {

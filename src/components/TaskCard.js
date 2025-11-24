@@ -53,8 +53,14 @@ export class TaskCard {
       createdAt,
     } = task;
 
-    const statusClass = completed ? "completed" : "pending";
-    const statusText = completed ? "Terminée" : "En cours";
+    const status = task.status || (completed ? "done" : "todo");
+    const statusLabels = {
+      todo: "À faire",
+      progress: "En cours",
+      done: "Terminée",
+    };
+    const statusClass = status;
+    const statusText = statusLabels[status];
     const truncatedDesc = this.truncateDescription(description);
 
     return `
@@ -69,21 +75,25 @@ export class TaskCard {
         <header class="task-card__header">
           <h3 class="task-card__title">${this.escapeHtml(title)}</h3>
           <div class="task-card__actions">
-            <button class="task-card__btn" data-action="toggle" 
-              aria-label="${
-                completed
-                  ? "Marquer comme non terminée"
-                  : "Marquer comme terminée"
-              }">
-              ${this.getCheckIcon(completed)}
-            </button>
-            <button class="task-card__btn" data-action="edit" aria-label="Modifier">
-              ${this.getEditIcon()}
-            </button>
-            <button class="task-card__btn" data-action="delete" aria-label="Supprimer">
-              ${this.getDeleteIcon()}
-            </button>
-          </div>
+  <select class="task-card__status-select" data-action="change-status" 
+    aria-label="Changer le statut">
+    <option value="todo" ${
+      status === "todo" ? "selected" : ""
+    }>⏳ À faire</option>
+    <option value="progress" ${
+      status === "progress" ? "selected" : ""
+    }>🔄 En cours</option>
+    <option value="done" ${
+      status === "done" ? "selected" : ""
+    }>✔️ Terminée</option>
+  </select>
+  <button class="task-card__btn" data-action="edit" aria-label="Modifier">
+    ${this.getEditIcon()}
+  </button>
+  <button class="task-card__btn" data-action="delete" aria-label="Supprimer">
+    ${this.getDeleteIcon()}
+  </button>
+</div>
         </header>
 
         ${

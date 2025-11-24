@@ -1,5 +1,6 @@
 /**
  * 🎯 FILTER BAR COMPONENT
+ * Gère les menus de filtrage avec positionnement dynamique
  */
 
 export class FilterBar {
@@ -183,9 +184,7 @@ export class FilterBar {
     items.forEach((i) => i.classList.remove("active"));
     item.classList.add("active");
 
-    const value =
-      item.dataset[type] || item.dataset.filter || item.dataset.sort;
-    this.filters[type] = value;
+    this.filters[type] = item.dataset[type];
 
     this.close(type);
     this.activeMenu = null;
