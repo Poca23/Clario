@@ -194,19 +194,19 @@
 }
 
 [data-theme="dark"] .toast--success {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.8);
 }
 
 [data-theme="dark"] .toast--error {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.8);
 }
 
 [data-theme="dark"] .toast--warning {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(245, 158, 11, 0.8);
 }
 
 [data-theme="dark"] .toast--info {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.8);
 }
 
 /* ===========================
@@ -240,4 +240,30 @@
   .toast {
     border: 2px solid currentColor;
   }
+}
+
+/* Notification persistante (offline uniquement) */
+.toast--persistent {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Icon offline custom */
+.toast--offline {
+  color: var(--warning, #f59e0b);
+  background: var(--warning-bg, #fffbeb);
+  border-left-color: var(--warning, #f59e0b);
+}
+
+[data-theme="dark"] .toast--offline {
+  background: rgba(245, 158, 11, 0.8);
 }

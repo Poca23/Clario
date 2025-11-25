@@ -139,13 +139,19 @@ class ClarioApp {
   }
 
   setupOfflineMode() {
+    let offlineToastShown = false;
+
     this.offlineService.addListener((status, isOnline) => {
-      if (isOnline) {
-        toast.success("✅ Connexion rétablie");
-      } else {
-        toast.warning("📡 Mode hors ligne activé");
+      if (!isOnline && !offlineToastShown) {
+        toast.network("📡 Mode hors ligne activé", "offline");
+        offlineToastShown = true;
       }
-      this.updateSyncButton(isOnline);
+
+      if (isOnline && offlineToastShown) {
+        toast.clearNetwork("offline");
+        toast.network("✅ Connexion rétablie", "online");
+        offlineToastShown = false;
+      }
     });
 
     this.updateSyncButton(this.offlineService.isOnline);

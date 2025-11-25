@@ -5,8 +5,8 @@
  * WHAT: Affichage toast responsive et accessible
  * WHY: Feedback utilisateur unifié et non-intrusif
  * WHERE: Overlay z-index 9999
- * WHEN: Actions CRUD + événements système
- * HOW: Injection dynamique + auto-dismiss + queue
+ * WHEN: Actions CRUD + événements système + statut réseau
+ * HOW: Injection dynamique + auto-dismiss + queue + notifications persistantes
  */
 
 export class Toast {
@@ -44,6 +44,7 @@ export class Toast {
       message,
       type,
       duration,
+      persistent: false,
     };
 
     this.queue.push(toast);
@@ -68,9 +69,9 @@ export class Toast {
   // 🎨 AFFICHAGE
   // ==========================================
 
-  displayToast({ id, message, type, duration }) {
+  displayToast({ id, message, type, duration, persistent = false }) {
     return new Promise((resolve) => {
-      const toast = this.createToastElement(id, message, type);
+      const toast = this.createToastElement(id, message, type, persistent);
       this.container.appendChild(toast);
 
       requestAnimationFrame(() => {
@@ -81,6 +82,9 @@ export class Toast {
         setTimeout(() => {
           this.removeToast(id, resolve);
         }, duration);
+      } else {
+        // Notification persistante : pas d'auto-dismiss
+        resolve();
       }
 
       const closeBtn = toast.querySelector(".toast__close");
@@ -90,11 +94,14 @@ export class Toast {
     });
   }
 
-  createToastElement(id, message, type) {
+  createToastElement(id, message, type, persistent = false) {
     const toast = document.createElement("div");
     toast.id = id;
-    toast.className = `toast toast--${type}`;
+    toast.className = `toast toast--${type}${
+      persistent ? " toast--persistent" : ""
+    }`;
     toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", persistent ? "assertive" : "polite");
 
     toast.innerHTML = `
       <div class="toast__icon">${this.getIcon(type)}</div>
@@ -123,6 +130,48 @@ export class Toast {
   }
 
   // ==========================================
+  // 📡 NOTIFICATIONS RÉSEAU
+  // ==========================================
+
+  /**
+   * 📡 Notification réseau persistante ou temporaire
+   * @param {string} message - Message à afficher
+   * @param {string} type - 'offline' ou 'online'
+   */
+  network(message, type = "offline") {
+    const id = `network-${type}`;
+
+    // Éviter doublons
+    const existing = document.getElementById(id);
+    if (existing) return;
+
+    const duration = type === "offline" ? 0 : 3000; // Offline = permanent
+
+    const toast = {
+      id,
+      message,
+      type: type === "offline" ? "offline" : "success",
+      duration,
+      persistent: type === "offline",
+    };
+
+    this.queue.unshift(toast); // Priorité haute
+    this.processQueue();
+  }
+
+  /**
+   * 🗑️ Supprimer notification réseau spécifique
+   * @param {string} type - 'offline' ou 'online'
+   */
+  clearNetwork(type = "offline") {
+    const id = `network-${type}`;
+    const toast = document.getElementById(id);
+    if (toast) {
+      this.removeToast(id, () => {});
+    }
+  }
+
+  // ==========================================
   // 🛠️ HELPERS
   // ==========================================
 
@@ -139,6 +188,9 @@ export class Toast {
       </svg>`,
       info: `<svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+      </svg>`,
+      offline: `<svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M23.64 7c-.45-.34-4.93-4-11.64-4-1.5 0-2.89.19-4.15.48L18.18 13.8 23.64 7zm-6.6 8.22L3.27 1.44 2 2.72l2.05 2.06C1.91 5.76.59 6.82.36 7l11.63 14.49.01.01.01-.01 3.9-4.86 3.32 3.32 1.27-1.27-3.46-3.46z"/>
       </svg>`,
     };
 
