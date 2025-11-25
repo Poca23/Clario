@@ -83,7 +83,6 @@ export class Toast {
           this.removeToast(id, resolve);
         }, duration);
       } else {
-        // Notification persistante : pas d'auto-dismiss
         resolve();
       }
 
@@ -97,7 +96,8 @@ export class Toast {
   createToastElement(id, message, type, persistent = false) {
     const toast = document.createElement("div");
     toast.id = id;
-    toast.className = `toast toast--${type}${
+    const typeClass = type === "offline" ? "warning" : type;
+    toast.className = `toast toast--${typeClass}${
       persistent ? " toast--persistent" : ""
     }`;
     toast.setAttribute("role", "alert");
@@ -133,19 +133,12 @@ export class Toast {
   // 📡 NOTIFICATIONS RÉSEAU
   // ==========================================
 
-  /**
-   * 📡 Notification réseau persistante ou temporaire
-   * @param {string} message - Message à afficher
-   * @param {string} type - 'offline' ou 'online'
-   */
   network(message, type = "offline") {
     const id = `network-${type}`;
-
-    // Éviter doublons
     const existing = document.getElementById(id);
     if (existing) return;
 
-    const duration = type === "offline" ? 0 : 3000; // Offline = permanent
+    const duration = type === "offline" ? 0 : 3000;
 
     const toast = {
       id,
@@ -155,14 +148,10 @@ export class Toast {
       persistent: type === "offline",
     };
 
-    this.queue.unshift(toast); // Priorité haute
+    this.queue.unshift(toast);
     this.processQueue();
   }
 
-  /**
-   * 🗑️ Supprimer notification réseau spécifique
-   * @param {string} type - 'offline' ou 'online'
-   */
   clearNetwork(type = "offline") {
     const id = `network-${type}`;
     const toast = document.getElementById(id);
