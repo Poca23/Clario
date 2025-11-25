@@ -1,3 +1,8 @@
+.tasks-grid {
+  max-width: 100%;
+  overflow: hidden;
+}
+
 /**
  * REQUIRES: theme.css variables
  */
@@ -22,6 +27,8 @@
   transition: var(--transition);
   cursor: pointer;
   border-left: 4px solid transparent;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .task-card:hover {

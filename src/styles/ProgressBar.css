@@ -1,15 +1,8 @@
 /**
  * 📊 PROGRESS BAR COMPONENT
- * 
- * WHO: Composant jauge de progression
- * WHAT: Barre visuelle pourcentage tâches complétées
- * WHY: Feedback utilisateur + motivation
- * HOW: CSS Grid + Custom Properties + Animations natives
  */
 
-/* ===========================
-   🎨 VARIABLES
-   =========================== */
+/* VARIABLES */
 .progress-wrapper {
   --progress-height: 8px;
   --progress-radius: 12px;
@@ -18,9 +11,7 @@
   --progress-transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ===========================
-   📐 LAYOUT
-   =========================== */
+/* LAYOUT BASE (Mobile-First) */
 .progress-wrapper {
   position: fixed;
   top: 100px;
@@ -28,18 +19,19 @@
   right: 0;
   z-index: 90;
   background: var(--bg-secondary);
-  padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
+  padding: 0.75rem;
   border-bottom: 1px solid var(--gray-700, rgba(255, 255, 255, 0.1));
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  box-sizing: border-box;
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-sm, 0.5rem);
-  font-size: var(--font-size-sm, 0.875rem);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .progress-label {
@@ -59,25 +51,26 @@
   color: var(--text-primary);
   font-weight: 700;
   font-size: 1rem;
-  font-variant-numeric: tabular-nums; /* Chiffres alignés */
+  font-variant-numeric: tabular-nums;
 }
 
-/* ===========================
-   🎨 BARRE
-   =========================== */
+/* BARRE */
 .progress-bar {
   position: relative;
   width: 100%;
+  max-width: 100%;
   height: var(--progress-height);
   background: var(--progress-bg);
   border-radius: var(--progress-radius);
   overflow: hidden;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  contain: layout style;
+  box-sizing: border-box;
 }
 
 .progress-fill {
   height: 100%;
-  width: 0%; /* Valeur initiale */
+  width: 0%;
   background: linear-gradient(
     90deg,
     var(--progress-fill),
@@ -86,17 +79,10 @@
   border-radius: var(--progress-radius);
   transition: var(--progress-transition);
   box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
-}
-
-/* ===========================
-   ✨ ANIMATIONS
-   =========================== */
-
-/* Pulse doux sur barre principale */
-.progress-fill {
   animation: gentle-pulse 3s ease-in-out infinite;
 }
 
+/* ANIMATIONS */
 @keyframes gentle-pulse {
   0%,
   100% {
@@ -105,18 +91,15 @@
   50% {
     opacity: 1;
   }
-  25% {
-    opacity: 0.6;
-  }
 }
 
-/* Shimmer très lent */
 .progress-fill::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, #ba8cccbe, transparent);
   animation: shimmer 8s infinite;
+  pointer-events: none;
 }
 
 @keyframes shimmer {
@@ -124,75 +107,34 @@
     transform: translateX(-100%);
   }
   100% {
-    transform: translateX(200%);
+    transform: translateX(100%);
   }
 }
 
-/* ===========================
-   📱 RESPONSIVE
-   =========================== */
-
-/* Mobile */
-@media (max-width: 480px) {
-  .progress-wrapper {
-    padding: var(--space-sm, 0.75rem) var(--space-md, 1rem);
-    top: 100px;
-  }
-
-  .progress-info {
-    font-size: 0.75rem;
-  }
-
-  .progress-percentage {
-    font-size: 0.875rem;
-  }
-
-  .progress-wrapper {
-    --progress-height: 6px;
-  }
-}
-
-/* Tablet+ */
+/* RESPONSIVE */
 @media (min-width: 768px) {
   .progress-wrapper {
+    padding: 1rem 1.5rem; /* ✅ Tablet/Desktop */
     --progress-height: 10px;
   }
-
-  .progress-info {
-    font-size: 0.875rem;
-  }
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-  .progress-wrapper {
-    border-radius: var(--radius, 8px);
-    margin: 0 auto;
-  }
-}
-
-/* ===========================
-   🎯 ÉTATS
-   =========================== */
-
-/* 100% complété */
+/* ÉTATS */
 .progress-fill[aria-valuenow="100"] {
   background: linear-gradient(90deg, var(--success), var(--success-light));
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
 }
 
-/* Dark mode */
 [data-theme="dark"] .progress-wrapper {
   --progress-bg: rgba(255, 255, 255, 0.05);
   border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .progress-fill {
     transition: none;
+    animation: none;
   }
-
   .progress-fill::after {
     animation: none;
   }

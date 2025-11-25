@@ -2,39 +2,37 @@
  * 🎯 FILTER BAR
  */
 
-/* ===========================
-   CONTENEUR PRINCIPAL
-   =========================== */
-
+/* CONTENEUR (Mobile-First) */
 .filter-bar {
   position: fixed;
-  top: 200px;
+  top: 177px;
   left: 0;
   right: 0;
   z-index: 80;
   background: var(--bg-secondary);
-  padding: var(--space-sm);
+  padding: 0.75rem;
   border-bottom: 1px solid var(--gray-700);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0.5rem;
+  box-sizing: border-box; /* ✅ AJOUT */
+  max-width: 100vw; /* ✅ AJOUT */
 }
 
-/* ===========================
-   RECHERCHE
-   =========================== */
-
+/* RECHERCHE */
 #search-input {
-  width: 100%;
-  padding: var(--space-sm);
+  width: 100%; /* ✅ Changé de 300px fixe */
+  max-width: 100%; /* ✅ AJOUT */
+  padding: 0.75rem;
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-md);
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   transition: var(--transition);
+  box-sizing: border-box; /* ✅ AJOUT */
 }
 
 #search-input:focus {
@@ -43,116 +41,99 @@
   box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
 }
 
-#search-input::placeholder {
-  color: var(--text-tertiary);
-}
-
-/* ===========================
-   GRILLE DE FILTRES
-   =========================== */
-
+/* GRILLE FILTRES */
 .filter-compact {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-xs);
+  gap: 4px;
+  width: 100%; /* ✅ AJOUT */
+  box-sizing: border-box; /* ✅ AJOUT */
 }
 
-/* ===========================
-   BOUTONS DE FILTRE
-   =========================== */
-
-.filter-dropdown {
-  position: relative;
-}
-
+/* BOUTONS */
 .filter-btn {
   width: 100%;
-  height: 40px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 var(--space-sm);
+  gap: 4px;
+  padding: 0 6px;
   background: var(--bg-primary);
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  transition: var(--transition);
+  box-sizing: border-box; /* ✅ AJOUT */
+  min-width: 0; /* ✅ AJOUT */
 }
 
 .filter-btn:hover {
   background: var(--bg-secondary);
   border-color: var(--coral);
-  color: var(--text-primary);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .filter-btn.active {
   background: var(--coral);
   border-color: var(--coral);
   color: white;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
 }
 
 .filter-icon {
-  font-size: 16px;
+  font-size: 18px;
   flex-shrink: 0;
-  line-height: 1;
 }
 
 .filter-text {
+  display: none;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
+  white-space: nowrap; /* ✅ AJOUT */
+  overflow: hidden; /* ✅ AJOUT */
+  text-overflow: ellipsis; /* ✅ AJOUT */
 }
 
-/* ===========================
-   MENU DÉROULANT
-   =========================== */
-
+/* MENU DÉROULANT */
 .filter-menu {
   position: fixed;
-  min-width: 180px;
-  max-width: calc(100vw - 32px);
+  min-width: 160px; /* ✅ Réduit de 200px */
+  max-width: calc(100vw - 2rem); /* ✅ AJOUT */
   background: var(--bg-secondary);
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-md);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: var(--space-xs);
+  padding: 0.5rem;
   display: none;
   flex-direction: column;
   gap: 2px;
   z-index: 200;
+  box-sizing: border-box; /* ✅ AJOUT */
 }
 
 .filter-menu.active {
   display: flex;
 }
 
-/* ===========================
-   ITEMS DE MENU
-   =========================== */
-
 .filter-item {
-  padding: var(--space-sm) var(--space-md);
+  padding: 0.75rem 1rem;
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-size: var(--font-size-sm);
+  font-size: 0.875rem;
   text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap; /* ✅ AJOUT */
 }
 
 .filter-item:hover {
@@ -165,73 +146,15 @@
   background: var(--coral);
   color: white;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
-.filter-item.active:hover {
-  transform: none;
-  background: var(--coral);
-}
-
-/* ===========================
-   RESPONSIVE
-   =========================== */
-
-@media (max-width: 480px) {
-  .filter-bar {
-    top: 177px;
-    padding: var(--space-xs);
-  }
-
-  .filter-compact {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-  }
-
-  .filter-btn {
-    height: 36px;
-    padding: 0 6px;
-    gap: 4px;
-  }
-
-  .filter-text {
-    display: none;
-  }
-
-  .filter-icon {
-    font-size: 18px;
-  }
-
-  .filter-menu {
-    min-width: 200px;
-  }
-
-  #search-input {
-    font-size: var(--font-size-xs);
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .filter-bar {
-    top: 190px;
-  }
-
-  .filter-btn {
-    height: 38px;
-    font-size: 11px;
-  }
-
-  .filter-text {
-    font-size: 10px;
-  }
-}
-
-@media (min-width: 769px) {
+/* RESPONSIVE */
+@media (min-width: 768px) {
   .filter-bar {
     top: 200px;
+    padding: 1rem 1.5rem;
     flex-direction: row;
     align-items: center;
-    padding: var(--space-sm) var(--space-md);
   }
 
   #search-input {
@@ -241,14 +164,25 @@
   .filter-compact {
     flex: 1;
     max-width: 600px;
-    gap: var(--space-sm);
+    gap: 0.75rem;
+  }
+
+  .filter-btn {
+    height: 40px;
+    padding: 0 1rem;
+    gap: 6px;
+  }
+
+  .filter-text {
+    display: block;
+  }
+
+  .filter-icon {
+    font-size: 16px;
   }
 }
 
-/* ===========================
-   ACCESSIBILITÉ
-   =========================== */
-
+/* ACCESSIBILITÉ */
 .filter-btn:focus-visible,
 .filter-item:focus-visible {
   outline: 2px solid var(--coral);
@@ -256,19 +190,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .filter-menu,
-  .filter-btn,
-  .filter-item {
+  * {
     transition: none;
-  }
-}
-
-/* ===========================
-   MODE SOMBRE
-   =========================== */
-
-@media (prefers-color-scheme: dark) {
-  .filter-menu {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   }
 }
