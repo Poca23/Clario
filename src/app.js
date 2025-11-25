@@ -58,7 +58,7 @@ class ClarioApp {
 
   async init() {
     SyncService.init();
-    await this.syncOnStartup(); // ✅ Charge directement depuis Firebase
+    await this.syncOnStartup();
     this.applyTheme();
     this.bindEvents();
     this.setupOfflineMode();
@@ -73,7 +73,7 @@ class ClarioApp {
       this.tasks = firebaseTasks;
     } catch (error) {
       console.error("❌ Erreur sync démarrage:", error);
-      this.tasks = StorageService.getTasks(); // ✅ Fallback sur cache local
+      this.tasks = StorageService.getTasks();
     }
   }
 
@@ -85,17 +85,13 @@ class ClarioApp {
       this.renderTasks();
     });
 
-    this.tasksContainer.addEventListener("click", (e) => {
-      const button = e.target.closest(".task-card__btn");
-      if (!button) return;
-
-      const card = button.closest(".task-card");
-      const taskId = card.dataset.taskId;
-      const action = button.dataset.action;
-
-      this.handleTaskAction(taskId, action);
+    // ✅ Utilisation de TaskCard.attachEvents()
+    TaskCard.attachEvents(this.tasksContainer, {
+      edit: (id) => this.openEditForm(id),
+      delete: (id) => this.deleteTask(id),
     });
 
+    // ✅ Gestion changement de statut
     this.tasksContainer.addEventListener("change", (e) => {
       if (e.target.matches("[data-action='change-status']")) {
         const card = e.target.closest(".task-card");
@@ -229,20 +225,6 @@ class ClarioApp {
       toast.success("🎉 Tâche terminée !", 2000);
     } else {
       toast.info("🔄 Tâche réactivée", 2000);
-    }
-  }
-
-  handleTaskAction(taskId, action) {
-    switch (action) {
-      case "toggle":
-        this.toggleTask(taskId);
-        break;
-      case "edit":
-        this.openEditForm(taskId);
-        break;
-      case "delete":
-        this.deleteTask(taskId);
-        break;
     }
   }
 

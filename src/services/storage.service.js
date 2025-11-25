@@ -30,4 +30,19 @@ export class StorageService {
       throw new Error("Stockage plein");
     }
   }
+
+  /**
+   * Ajoute une nouvelle tâche
+   */
+  static addTask(task) {
+    const tasks = this.getTasks();
+    const newTask = {
+      ...task,
+      id: task.id || `task_${Date.now()}`,
+      createdAt: task.createdAt || Date.now(),
+    };
+    tasks.push(newTask);
+    this.saveTasks(tasks);
+    return newTask;
+  }
 }

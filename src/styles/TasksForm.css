@@ -37,7 +37,7 @@
    =========================== */
 
 .task-form {
-  padding: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .task-form h2 {
@@ -224,7 +224,7 @@
   }
 
   .task-form {
-    padding: var(--space-sm);
+    padding: var(--space-lg);
   }
 
   .task-form h2 {

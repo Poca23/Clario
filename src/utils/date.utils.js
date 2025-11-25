@@ -1,21 +1,26 @@
 /**
- * 📅 DATE UTILITIES
- *
- * WHO: Helpers pour manipulation dates
- * WHAT: Formatage, comparaison, validation
- * WHY: Logique date réutilisable
- * HOW: API Intl + Date native
+ * 📅 DATE UTILITIES (CORRIGÉ)
  */
 
 /**
  * Formate une date en français
- * @param {string|Date} date - Date à formater
+ * @param {string|Date|number} date - Date à formater (ISO/Date/timestamp)
  * @returns {string} Date formatée (ex: "15 janv. 2024")
  */
 export function formatDate(date) {
   if (!date) return "Aucune date";
 
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  let dateObj;
+
+  if (typeof date === "string") {
+    dateObj = new Date(date);
+  } else if (typeof date === "number") {
+    dateObj = new Date(date);
+  } else if (date instanceof Date) {
+    dateObj = date;
+  } else {
+    return "Format invalide";
+  }
 
   if (isNaN(dateObj.getTime())) {
     return "Date invalide";
@@ -30,13 +35,18 @@ export function formatDate(date) {
 
 /**
  * Formate une date en format relatif
- * @param {string|Date} date - Date à formater
+ * @param {string|Date|number} date - Date à formater
  * @returns {string} Format relatif (ex: "il y a 2 jours")
  */
 export function formatRelative(date) {
   if (!date) return "Aucune date";
 
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj = new Date(date);
+
+  if (isNaN(dateObj.getTime())) {
+    return "Date invalide";
+  }
+
   const now = new Date();
   const diffMs = now - dateObj;
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -52,23 +62,25 @@ export function formatRelative(date) {
 
 /**
  * Vérifie si une date est passée
- * @param {string|Date} date - Date à vérifier
+ * @param {string|Date|number} date - Date à vérifier
  * @returns {boolean} True si passée
  */
 export function isPastDue(date) {
   if (!date) return false;
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  return dateObj < new Date();
+  const dateObj = new Date(date);
+  return !isNaN(dateObj.getTime()) && dateObj < new Date();
 }
 
 /**
  * Calcule le nombre de jours restants
- * @param {string|Date} date - Date cible
+ * @param {string|Date|number} date - Date cible
  * @returns {number} Nombre de jours
  */
 export function daysUntil(date) {
   if (!date) return null;
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) return null;
+
   const now = new Date();
   const diffMs = dateObj - now;
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -85,7 +97,7 @@ export function getTodayISO() {
 
 /**
  * Valide un format de date
- * @param {string} dateString - Date à valider
+ * @param {string|Date|number} dateString - Date à valider
  * @returns {boolean} True si valide
  */
 export function isValidDate(dateString) {
