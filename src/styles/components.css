@@ -185,58 +185,6 @@
 }
 
 /* ===========================
-   🔄 SYNC INDICATOR
-   =========================== */
-
-.sync-indicator {
-  position: fixed;
-  bottom: var(--space-lg);
-  left: var(--space-lg);
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--font-size-sm);
-  z-index: 50;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: var(--transition);
-}
-
-.sync-indicator.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.sync-indicator__icon {
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.sync-indicator--success .sync-indicator__icon {
-  fill: var(--success);
-  animation: none;
-}
-
-.sync-indicator--error .sync-indicator__icon {
-  fill: var(--error);
-  animation: none;
-}
-
-/* ===========================
    📱 RESPONSIVE
    =========================== */
 
