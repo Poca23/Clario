@@ -114,8 +114,14 @@
 /* RESPONSIVE */
 @media (min-width: 768px) {
   .progress-wrapper {
-    padding: 1rem 1.5rem; /* ✅ Tablet/Desktop */
+    padding: 1rem 1.5rem;
     --progress-height: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-wrapper {
+    top: 75px;
   }
 }
 
