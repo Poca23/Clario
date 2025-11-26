@@ -29,7 +29,6 @@
   padding: var(--space-lg);
 }
 .task-form h2 {
-  margin-bottom: var(--space-lg);
   color: var(--text-primary);
   font-size: var(--font-size-xl);
   text-align: center;

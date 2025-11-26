@@ -4,7 +4,7 @@
 
 .filter-bar {
   position: fixed;
-  top: 147px;
+  top: 135px;
   left: 0;
   right: 0;
   z-index: 80;
@@ -126,7 +126,7 @@
 }
 @media (min-width: 768px) {
   .filter-bar {
-    top: 180px;
+    top: 177px;
     padding: 1rem 1.5rem;
     flex-direction: row;
     align-items: center;
