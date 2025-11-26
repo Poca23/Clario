@@ -8,51 +8,61 @@
   padding: 0;
   max-width: 500px;
   width: 90%;
+  max-height: 90vh;
   background: var(--bg-primary);
   box-shadow: var(--shadow-md);
+
+  /* ✅ FIX CENTRAGE MOBILE */
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
+  inset: 0;
+  margin: auto;
+  overflow-y: auto;
 }
+
 .modal[open] {
-  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
+
 .modal::backdrop {
   background: rgba(0, 0, 0, 0.7);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
+
 .task-form {
   padding: var(--space-lg);
 }
+
 .task-form h2 {
   color: var(--text-primary);
   font-size: var(--font-size-xl);
   text-align: center;
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: var(--space-md);
 }
+
 .form-group label {
   font-weight: 600;
   color: var(--text-primary);
   font-size: var(--font-size-sm);
 }
+
 .form-group--inline {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
 }
+
 .form-group--inline .form-group {
   margin-bottom: 0;
 }
+
 .task-form input,
 .task-form textarea,
 .task-form select {
@@ -66,11 +76,13 @@
   font-family: var(--font-family);
   transition: var(--transition);
 }
+
 .task-form textarea {
   resize: vertical;
-  min-height: 25px;
+  min-height: 80px;
   line-height: 1.5;
 }
+
 .task-form select {
   cursor: pointer;
   appearance: none;
@@ -80,6 +92,7 @@
   background-position: right 1rem center;
   padding-right: 2.5rem;
 }
+
 .task-form input:focus,
 .task-form textarea:focus,
 .task-form select:focus {
@@ -87,11 +100,13 @@
   border-color: var(--coral);
   box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
 }
+
 .task-form input:hover,
 .task-form textarea:hover,
 .task-form select:hover {
   border-color: var(--coral-light);
 }
+
 .task-form input:disabled,
 .task-form textarea:disabled,
 .task-form select:disabled {
@@ -99,95 +114,109 @@
   cursor: not-allowed;
   background: var(--gray-700);
 }
+
 .task-form input::placeholder,
 .task-form textarea::placeholder {
   color: var(--text-secondary);
   opacity: 0.6;
 }
+
 .form-actions {
   display: flex;
   gap: var(--space-sm);
   justify-content: center;
   margin-top: var(--space-lg);
 }
+
 .form-actions .btn-primary,
 .form-actions .btn-secondary {
   min-width: 120px;
 }
+
 .form-group input:invalid,
 .form-group textarea:invalid,
 .form-group select:invalid {
   border-color: var(--error);
 }
+
 .form-error {
   color: var(--error);
   font-size: var(--font-size-sm);
   margin-top: 0.25rem;
   display: none;
 }
+
 .form-group.has-error .form-error {
   display: block;
 }
+
 .form-group.has-error input,
 .form-group.has-error textarea,
 .form-group.has-error select {
   border-color: var(--error);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
+
 @media (max-width: 480px) {
+  .modal {
+    width: 95%;
+  }
+
   .form-group--inline {
     grid-template-columns: 1fr;
   }
+
   .task-form {
-    padding: var(--space-lg);
+    padding: var(--space-md);
   }
+
   .task-form h2 {
     font-size: var(--font-size-lg);
   }
+
   .form-actions {
     flex-direction: column;
   }
+
   .form-actions .btn-primary,
   .form-actions .btn-secondary {
     width: 100%;
   }
 }
-@media (max-width: 767px) {
-  .modal {
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-}
+
 [data-theme="dark"] .modal {
   background: var(--bg-secondary);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
+
 [data-theme="dark"] .task-form input,
 [data-theme="dark"] .task-form textarea,
 [data-theme="dark"] .task-form select {
   border-color: var(--gray-700);
   color: var(--white);
 }
+
 [data-theme="dark"] .task-form select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
 }
+
 [data-theme="dark"] .form-group label {
   color: var(--gray-100);
 }
+
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
   }
 }
+
 .modal[open] {
   animation: modalFadeIn 0.2s ease;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .modal[open] {
     animation: none;
