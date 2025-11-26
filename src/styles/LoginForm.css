@@ -1,10 +1,5 @@
 /**
  * 🔐 LOGIN FORM STYLES
- * 
- * WHO: Styles du formulaire de connexion
- * WHAT: Overlay + card + form styling
- * WHY: Séparation des responsabilités
- * HOW: CSS isolé pour LoginForm.js
  */
 
 .login-container {
@@ -19,7 +14,6 @@
   justify-content: center;
   z-index: 9999;
 }
-
 .login-card {
   background: white;
   padding: 1.5rem;
@@ -28,38 +22,32 @@
   width: 90%;
   max-width: 400px;
 }
-
 .login-title {
-  font-size: 2rem;
+  font-size: var(--font-size-2xl);
   margin-bottom: 0.5rem;
   text-align: center;
   color: #1f2937;
 }
-
 .login-subtitle {
   text-align: center;
   color: #6b7280;
   margin-bottom: 2rem;
 }
-
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .form-group label {
   font-weight: 600;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
-
 .form-group input {
   padding: 0.65rem;
   border: 2px solid #e5e7eb;
@@ -67,29 +55,23 @@
   font-size: 1rem;
   transition: border-color 0.2s;
 }
-
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
 }
-
 .login-error {
   color: #ef4444;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   text-align: center;
   margin-top: 1rem;
   min-height: 1.25rem;
 }
-
-/* Mode sombre */
 [data-theme="dark"] .login-card {
   background: #1f2937;
 }
-
 [data-theme="dark"] .login-title {
   color: white;
 }
-
 [data-theme="dark"] .form-group input {
   background: #374151;
   border-color: #4b5563;

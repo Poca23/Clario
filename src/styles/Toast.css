@@ -1,42 +1,26 @@
 /**
  * 🔔 TOAST NOTIFICATIONS STYLES
- *
- * ARCHITECTURE:
- * - Container fixe (bottom-right responsive)
- * - Toast card avec états (success/error/warning/info)
- * - Animations entrée/sortie fluides
- * - Support dark mode automatique
- * - Responsive mobile/desktop
  */
-
-/* ===========================
-   📦 CONTAINER
-   =========================== */
 
 .toast-container {
   position: fixed;
-  bottom: var(--space-md, 1rem);
-  right: var(--space-md, 1rem);
+  bottom: var(--space-md);
+  right: var(--space-md);
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs, 0.5rem);
+  gap: var(--space-xs);
   max-width: calc(100vw - 2rem);
   pointer-events: none;
 }
-
-/* ===========================
-   🍞 TOAST BASE
-   =========================== */
-
 .toast {
   display: flex;
   align-items: center;
-  gap: var(--space-sm, 0.75rem);
-  padding: var(--space-sm, 0.75rem) var(--space-md, 1rem);
-  background: var(--bg-card, #ffffff);
-  border-radius: var(--radius, 8px);
-  box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   border-left: 4px solid currentColor;
   min-width: 280px;
   max-width: 420px;
@@ -45,225 +29,73 @@
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   pointer-events: auto;
 }
-
-/* État visible */
 .toast--visible {
   opacity: 1;
   transform: translateX(0);
 }
-
-/* Animation sortie */
 .toast--exit {
   opacity: 0;
   transform: translateX(calc(100% + 2rem)) scale(0.8);
 }
-
-/* ===========================
-   🎨 TYPES (couleurs)
-   =========================== */
-
 .toast--success {
-  color: var(--success, #10b981);
-  background: var(--success-bg, #ecfdf5);
-  border-left-color: var(--success, #10b981);
+  color: var(--success);
 }
-
 .toast--error {
-  color: var(--danger, #ef4444);
-  background: var(--danger-bg, #fef2f2);
-  border-left-color: var(--danger, #ef4444);
+  color: var(--error);
 }
-
 .toast--warning {
-  color: var(--warning, #f59e0b);
-  background: var(--warning-bg, #fffbeb);
-  border-left-color: var(--warning, #f59e0b);
+  color: var(--warning);
 }
-
 .toast--info {
-  color: var(--primary, #6366f1);
-  background: var(--primary-bg, #eef2ff);
-  border-left-color: var(--primary, #6366f1);
+  color: var(--coral);
 }
-
-/* ===========================
-   🔤 CONTENU
-   =========================== */
-
 .toast__icon {
+  font-size: 1.5rem;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 1;
 }
-
-.toast__icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.toast__message {
+.toast__content {
   flex: 1;
-  margin: 0;
-  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   line-height: 1.4;
-  color: var(--text-primary, #1f2937);
-  word-break: break-word;
 }
-
 .toast__close {
-  flex-shrink: 0;
   width: 24px;
   height: 24px;
-  padding: 0;
   border: none;
   background: transparent;
-  color: currentColor;
   cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-xs);
+  transition: var(--transition);
+  flex-shrink: 0;
 }
-
 .toast__close:hover {
-  opacity: 1;
-  transform: scale(1.1);
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
-
-.toast__close:active {
-  transform: scale(0.95);
-}
-
 .toast__close svg {
   width: 16px;
   height: 16px;
+  fill: currentColor;
 }
-
-/* ===========================
-   📱 RESPONSIVE
-   =========================== */
-
-/* Mobile (portrait) */
 @media (max-width: 480px) {
   .toast-container {
-    left: var(--space-sm, 0.75rem);
-    right: var(--space-sm, 0.75rem);
-    bottom: var(--space-sm, 0.75rem);
+    left: var(--space-sm);
+    right: var(--space-sm);
   }
-
   .toast {
-    min-width: unset;
-    width: 100%;
-    padding: var(--space-xs, 0.5rem) var(--space-sm, 0.75rem);
-  }
-
-  .toast__message {
-    font-size: 0.8125rem;
+    min-width: 0;
+    max-width: 100%;
   }
 }
-
-/* Tablet+ */
-@media (min-width: 768px) {
-  .toast-container {
-    max-width: 420px;
-  }
-}
-
-/* Desktop large */
-@media (min-width: 1024px) {
-  .toast {
-    min-width: 320px;
-  }
-}
-
-/* ===========================
-   🌙 DARK MODE
-   =========================== */
-
-[data-theme="dark"] .toast {
-  background: var(--bg-card-dark, #1f2937);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .toast__message {
-  color: var(--text-primary-dark, #f9fafb);
-}
-
-[data-theme="dark"] .toast--success {
-  background: rgba(16, 185, 129, 0.8);
-}
-
-[data-theme="dark"] .toast--error {
-  background: rgba(239, 68, 68, 0.8);
-}
-
-[data-theme="dark"] .toast--warning {
-  background: rgba(245, 158, 11, 0.8);
-}
-
-[data-theme="dark"] .toast--info {
-  background: rgba(99, 102, 241, 0.8);
-}
-
-/* ===========================
-   ♿ ACCESSIBILITÉ
-   =========================== */
-
-/* Focus visible pour clavier */
-.toast__close:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .toast {
     transition: opacity 0.2s ease;
-    transform: none !important;
   }
-
-  .toast--visible {
-    opacity: 1;
-  }
-
-  .toast--exit {
-    opacity: 0;
-  }
-}
-
-/* High contrast */
-@media (prefers-contrast: high) {
-  .toast {
-    border: 2px solid currentColor;
-  }
-}
-
-/* Notification persistante (offline uniquement) */
-.toast--persistent {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.85;
-  }
-}
-
-/* Icon offline custom */
-.toast--offline {
-  color: var(--warning, #f59e0b);
-  background: var(--warning-bg, #fffbeb);
-  border-left-color: var(--warning, #f59e0b);
-}
-
-[data-theme="dark"] .toast--offline {
-  background: rgba(245, 158, 11, 0.8);
 }

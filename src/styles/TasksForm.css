@@ -1,15 +1,6 @@
 /**
  * 📝 TASK FORM STYLESHEET
- * 
- * WHO: Styles du formulaire de création/édition de tâches
- * WHAT: Modal, inputs, boutons d'action
- * WHY: Séparation des responsabilités CSS
- * HOW: BEM naming + responsive inline
  */
-
-/* ===========================
-   📝 MODAL
-   =========================== */
 
 .modal {
   border: none;
@@ -25,68 +16,44 @@
   transform: translate(-50%, -50%);
   margin: 0;
 }
-
+.modal[open] {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
 .modal::backdrop {
   background: rgba(0, 0, 0, 0.7);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
-
-/* ===========================
-   📝 FORM STRUCTURE
-   =========================== */
-
 .task-form {
   padding: var(--space-lg);
 }
-
 .task-form h2 {
   margin-bottom: var(--space-lg);
   color: var(--text-primary);
   font-size: var(--font-size-xl);
   text-align: center;
 }
-
-/* ===========================
-   📋 FORM GROUPS
-   =========================== */
-
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: var(--space-md);
 }
-
 .form-group label {
   font-weight: 600;
   color: var(--text-primary);
   font-size: var(--font-size-sm);
 }
-
-/* ===========================
-   📅 DATE + HEURE INLINE
-   =========================== */
-
 .form-group--inline {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
 }
-
 .form-group--inline .form-group {
   margin-bottom: 0;
 }
-
-.form-group--inline input {
-  margin-bottom: 0;
-}
-
-/* ===========================
-   🎨 INPUTS STYLING
-   =========================== */
-
 .task-form input,
 .task-form textarea,
 .task-form select {
@@ -100,21 +67,13 @@
   font-family: var(--font-family);
   transition: var(--transition);
 }
-
 .task-form textarea {
   resize: vertical;
   min-height: 25px;
   line-height: 1.5;
 }
-
-/* ===========================
-   🎯 SELECT PRIORITÉ - FIX FINAL
-   =========================== */
-
 .task-form select {
   cursor: pointer;
-  -moz-appearance: none;
-  -webkit-appearance: none;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -122,39 +81,18 @@
   background-position: right 1rem center;
   padding-right: 2.5rem;
 }
-
-.task-form select::-ms-expand {
-  display: none;
-}
-
-/* ===========================
-   🎯 ÉTATS INTERACTIFS
-   =========================== */
-
-/* Focus standard */
 .task-form input:focus,
-.task-form textarea:focus {
-  outline: none;
-  border-color: var(--coral);
-  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
-}
-
-/* Focus select SANS animation */
+.task-form textarea:focus,
 .task-form select:focus {
   outline: none;
   border-color: var(--coral);
   box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
-  animation: none;
 }
-
-/* Hover */
 .task-form input:hover,
 .task-form textarea:hover,
 .task-form select:hover {
   border-color: var(--coral-light);
 }
-
-/* Disabled */
 .task-form input:disabled,
 .task-form textarea:disabled,
 .task-form select:disabled {
@@ -162,85 +100,59 @@
   cursor: not-allowed;
   background: var(--gray-700);
 }
-
-/* Placeholder */
 .task-form input::placeholder,
 .task-form textarea::placeholder {
   color: var(--text-secondary);
   opacity: 0.6;
 }
-
-/* ===========================
-   🔘 FORM ACTIONS
-   =========================== */
-
 .form-actions {
   display: flex;
   gap: var(--space-sm);
   justify-content: center;
   margin-top: var(--space-lg);
 }
-
 .form-actions .btn-primary,
 .form-actions .btn-secondary {
   min-width: 120px;
 }
-
-/* ===========================
-   ⚠️ VALIDATION & ERRORS
-   =========================== */
-
 .form-group input:invalid,
 .form-group textarea:invalid,
 .form-group select:invalid {
   border-color: var(--error);
 }
-
 .form-error {
   color: var(--error);
   font-size: var(--font-size-sm);
   margin-top: 0.25rem;
   display: none;
 }
-
 .form-group.has-error .form-error {
   display: block;
 }
-
 .form-group.has-error input,
 .form-group.has-error textarea,
 .form-group.has-error select {
   border-color: var(--error);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
-
-/* ===========================
-   📱 RESPONSIVE
-   =========================== */
-
 @media (max-width: 480px) {
   .form-group--inline {
     grid-template-columns: 1fr;
   }
-
   .task-form {
     padding: var(--space-lg);
   }
-
   .task-form h2 {
     font-size: var(--font-size-lg);
   }
-
   .form-actions {
     flex-direction: column;
   }
-
   .form-actions .btn-primary,
   .form-actions .btn-secondary {
     width: 100%;
   }
 }
-
 @media (max-width: 767px) {
   .modal {
     width: 95%;
@@ -248,86 +160,22 @@
     overflow-y: auto;
   }
 }
-
-/* ===========================
-   🌙 DARK MODE
-   =========================== */
-
 [data-theme="dark"] .modal {
   background: var(--bg-secondary);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
-
 [data-theme="dark"] .task-form input,
 [data-theme="dark"] .task-form textarea,
 [data-theme="dark"] .task-form select {
   border-color: var(--gray-700);
   color: var(--white);
 }
-
-[data-theme="dark"] .task-form input:focus,
-[data-theme="dark"] .task-form textarea:focus {
-  border-color: var(--coral-light);
-  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.2);
+[data-theme="dark"] .task-form select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
 }
-
-[data-theme="dark"] .task-form select:focus {
-  border-color: var(--coral-light);
-  box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.2);
-  animation: none;
-}
-
 [data-theme="dark"] .form-group label {
   color: var(--gray-100);
 }
-
-[data-theme="dark"] .task-form select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-size: 12px 12px;
-}
-
-/* ===========================
-   ♿ ACCESSIBILITY
-   =========================== */
-
-@media (prefers-reduced-motion: reduce) {
-  .modal {
-    transition: none;
-  }
-
-  .task-form input,
-  .task-form textarea,
-  .task-form select {
-    transition: none;
-  }
-}
-
-.task-form input:focus-visible,
-.task-form textarea:focus-visible,
-.task-form select:focus-visible {
-  outline: 2px solid var(--coral);
-  outline-offset: 2px;
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .task-form input,
-  .task-form textarea,
-  .task-form select {
-    border-width: 2px;
-  }
-
-  .task-form input:focus,
-  .task-form textarea:focus,
-  .task-form select:focus {
-    outline: 3px solid var(--coral);
-  }
-}
-
-/* ===========================
-   🎨 ANIMATIONS
-   =========================== */
-
 @keyframes modalFadeIn {
   from {
     opacity: 0;
@@ -338,30 +186,11 @@
     transform: translate(-50%, -50%);
   }
 }
-
 .modal[open] {
   animation: modalFadeIn 0.2s ease;
 }
-
-/* Animation focusPulse UNIQUEMENT pour input/textarea */
-@keyframes focusPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 3px rgba(154, 49, 196, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 0 5px rgba(154, 49, 196, 0.15);
-  }
-}
-
-.task-form input:focus,
-.task-form textarea:focus {
-  animation: focusPulse 2s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .task-form input:focus,
-  .task-form textarea:focus {
+  .modal[open] {
     animation: none;
   }
 }
