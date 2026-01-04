@@ -289,26 +289,42 @@ class ClarioApp {
     return this.sortTasks(filtered, filters.sort);
   }
 
+  /**
+   * 🔄 TRI DES TÂCHES
+   * Extrait le timestamp depuis l'ID (format: task_1234567890123)
+   */
   sortTasks(tasks, sortType) {
     const sorted = [...tasks];
 
+    // Fonction helper pour extraire le timestamp de l'ID
+    const getTimestamp = (task) => {
+      if (task.createdAt) return task.createdAt;
+
+      // Extrait timestamp depuis l'ID (ex: "task_1234567890123" → 1234567890123)
+      const match = task.id.match(/_(\d+)$/);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+
     switch (sortType) {
       case "oldest":
-        return sorted.sort((a, b) => a.createdAt - b.createdAt);
+        return sorted.sort((a, b) => getTimestamp(a) - getTimestamp(b));
+
       case "priority":
         const priorityOrder = { high: 0, medium: 1, low: 2 };
         return sorted.sort(
           (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
         );
+
       case "dueDate":
         return sorted.sort((a, b) => {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
           return new Date(a.dueDate) - new Date(b.dueDate);
         });
+
       case "newest":
       default:
-        return sorted.sort((a, b) => b.createdAt - a.createdAt);
+        return sorted.sort((a, b) => getTimestamp(b) - getTimestamp(a));
     }
   }
 
