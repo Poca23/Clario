@@ -308,7 +308,7 @@ class ClarioApp {
         });
       case "newest":
       default:
-        return sorted.sort((a, b) => b.createdAt - a.createdAt);
+        return sorted.sort((a, b) => a.createdAt - b.createdAt);
     }
   }
 
