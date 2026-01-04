@@ -11,7 +11,7 @@ export class FilterBar {
       status: "all",
       date: "all",
       priority: "all",
-      sort: "newest",
+      sort: "all",
     };
 
     this.config = ["status", "date", "priority", "sort"];
