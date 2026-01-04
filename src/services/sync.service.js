@@ -108,15 +108,20 @@ export class SyncService {
   }
 
   /**
-   * Synchronise une tâche vers Firebase
+   * ✅ FIX : Synchronise une tâche vers Firebase AVEC createdAt
    */
   static async syncTaskToFirebase(task, userId) {
     const taskRef = doc(db, COLLECTION_NAME, task.id);
-    await setDoc(taskRef, {
+
+    // ✅ Garantir que createdAt existe TOUJOURS
+    const taskData = {
       ...task,
       userId,
+      createdAt: task.createdAt || Date.now(), // ⚡ FIX ICI
       syncedAt: new Date().toISOString(),
-    });
+    };
+
+    await setDoc(taskRef, taskData);
   }
 
   /**
@@ -176,15 +181,20 @@ export class SyncService {
   }
 
   /**
-   * Synchronisation complète (Firebase → Local)
+   * ✅ FIX : Synchronisation complète avec préservation createdAt
    */
   static async fullSync() {
     try {
       const snapshot = await getDocs(collection(db, COLLECTION_NAME));
-      const firebaseTasks = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const firebaseTasks = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // ✅ Garantir createdAt même si absent dans Firebase
+          createdAt: data.createdAt || this.extractTimestampFromId(doc.id),
+        };
+      });
 
       StorageService.saveTasks(firebaseTasks);
       return firebaseTasks;
@@ -192,6 +202,14 @@ export class SyncService {
       console.error("❌ Erreur sync complète:", error);
       throw error;
     }
+  }
+
+  /**
+   * ✅ HELPER : Extrait timestamp depuis l'ID (fallback)
+   */
+  static extractTimestampFromId(taskId) {
+    const match = taskId.match(/_(\d+)$/);
+    return match ? parseInt(match[1], 10) : Date.now();
   }
 
   /**
