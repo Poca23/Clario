@@ -309,12 +309,6 @@ class ClarioApp {
       case "oldest":
         return sorted.sort((a, b) => getTimestamp(a) - getTimestamp(b));
 
-      case "priority":
-        const priorityOrder = { high: 0, medium: 1, low: 2 };
-        return sorted.sort(
-          (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
-        );
-
       case "dueDate":
         return sorted.sort((a, b) => {
           if (!a.dueDate) return 1;
